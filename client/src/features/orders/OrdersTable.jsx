@@ -55,8 +55,99 @@ export function OrdersTable({ orders = [], onOrderUpdated }) {
 
   return (
     <div className="space-y-3">
-      {/* Table container */}
-      <div className="overflow-x-auto rounded-xl border border-[#E2E8F0] bg-white shadow-2xs">
+      {/* Mobile Card View (< sm) */}
+      <div className="sm:hidden space-y-2.5">
+        {orders.length === 0 ? (
+          <div className="py-8 text-center text-[#94A3B8] italic bg-white rounded-xl border border-[#E2E8F0] text-xs">
+            No orders found.
+          </div>
+        ) : (
+          orders.map((order) => (
+            <div
+              key={order._id || order.orderId}
+              className="bg-white border border-[#E2E8F0] rounded-xl p-3.5 shadow-2xs space-y-2.5"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-[#172B4D] text-sm font-sans">{order.instrument}</span>
+                  <span
+                    className={`text-[10px] font-bold px-1.5 py-0.5 rounded font-mono ${
+                      order.side === 'BUY'
+                        ? 'bg-[#E6F4EF] text-[#087F5B] border border-[#A7F3D0]'
+                        : 'bg-[#FEE2E2] text-[#D64545] border border-[#FECACA]'
+                    }`}
+                  >
+                    {order.side}
+                  </span>
+                  <span className="text-[10px] text-[#667085] bg-[#F1F5F9] px-1 py-0.5 rounded font-mono">
+                    {order.orderType}
+                  </span>
+                </div>
+                <StatusBadge status={order.status} />
+              </div>
+
+              <div className="grid grid-cols-2 min-[360px]:grid-cols-3 gap-2 bg-[#F8FAFC] p-2.5 rounded-lg border border-[#E2E8F0] text-xs font-mono">
+                <div>
+                  <span className="text-[10px] text-[#667085] font-sans block">Price</span>
+                  <span className="font-semibold text-[#172B4D]">
+                    {order.orderType === 'LIMIT' ? formatINR(order.priceInPaise) : 'Market'}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-[#667085] font-sans block">Filled / Qty</span>
+                  <span className="font-semibold text-[#172B4D]">
+                    {formatQuantity(order.filledQuantity)}
+                    <span className="text-[#94A3B8]"> / {formatQuantity(order.quantity)}</span>
+                  </span>
+                </div>
+                <div className="col-span-2 min-[360px]:col-span-1">
+                  <span className="text-[10px] text-[#667085] font-sans block">Avg Price</span>
+                  <span className="text-[#667085]">
+                    {order.averageExecutionPriceInPaise > 0
+                      ? formatINR(order.averageExecutionPriceInPaise)
+                      : '-'}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between pt-1 border-t border-[#F1F5F9] text-[10px] text-[#667085]">
+                <div className="flex flex-col min-w-0">
+                  <span className="font-mono text-[#172B4D] font-medium truncate max-w-[130px]">
+                    {order.orderId}
+                  </span>
+                  <span className="text-[9px] text-[#94A3B8]">
+                    {formatDateTime(order.createdAt)}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <button
+                    onClick={() => handleOpenDetail(order._id || order.orderId)}
+                    className="p-1.5 rounded-md text-[#667085] hover:text-[#172B4D] hover:bg-[#F1F5F9] border border-[#E2E8F0]"
+                    title="View details"
+                  >
+                    <Eye className="w-3.5 h-3.5" />
+                  </button>
+
+                  {isCancellable(order.status) && (
+                    <button
+                      onClick={() => handlePromptCancel(order)}
+                      className="px-2 py-1 rounded-md text-[#D64545] bg-[#FEF2F2] hover:bg-[#FEE2E2] font-semibold text-[10px] flex items-center gap-1 border border-[#FECACA]"
+                      title="Cancel order"
+                    >
+                      <Ban className="w-3 h-3" />
+                      <span>Cancel</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Desktop & Tablet Table View (>= sm) */}
+      <div className="hidden sm:block overflow-x-auto rounded-xl border border-[#E2E8F0] bg-white shadow-2xs min-w-0 max-w-full">
         <table className="w-full text-left text-xs min-w-[700px]">
           <thead className="bg-[#F8FAFC] text-[#667085] uppercase text-[10px] font-mono tracking-wider border-b border-[#E2E8F0]">
             <tr>

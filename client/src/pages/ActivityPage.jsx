@@ -77,8 +77,58 @@ export function ActivityPage() {
         </span>
       </div>
 
-      {/* Executions Table */}
-      <div className="overflow-x-auto rounded-xl border border-[#E2E8F0] bg-white shadow-2xs">
+      {/* Mobile Executions Card View (< sm) */}
+      <div className="sm:hidden space-y-2.5">
+        {executions.length === 0 ? (
+          <div className="py-8 text-center text-[#94A3B8] italic bg-white rounded-xl border border-[#E2E8F0] text-xs">
+            No trade executions found.
+          </div>
+        ) : (
+          executions.map((exec) => (
+            <div
+              key={exec.executionId || exec._id}
+              className="bg-white border border-[#E2E8F0] rounded-xl p-3.5 shadow-2xs space-y-2"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-[#172B4D] text-sm font-sans">{exec.instrument}</span>
+                  <span
+                    className={`inline-flex items-center px-2 py-0.5 rounded font-semibold text-[10px] font-mono ${
+                      exec.userSide === 'BUY'
+                        ? 'bg-[#E6F4EF] text-[#087F5B] border border-[#A7F3D0]'
+                        : 'bg-[#FEE2E2] text-[#D64545] border border-[#FECACA]'
+                    }`}
+                  >
+                    {exec.userSide}
+                  </span>
+                </div>
+                <span className="text-[10px] font-mono text-[#087F5B] font-semibold">
+                  {formatINR(exec.notionalPaise)}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 bg-[#F8FAFC] p-2.5 rounded-lg border border-[#E2E8F0] text-xs font-mono">
+                <div>
+                  <span className="text-[10px] text-[#667085] font-sans block">Execution Price</span>
+                  <span className="font-semibold text-[#172B4D]">{formatINR(exec.priceInPaise)}</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-[#667085] font-sans block">Shares Filled</span>
+                  <span className="font-semibold text-[#172B4D]">{formatQuantity(exec.quantity)}</span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between pt-1 border-t border-[#F1F5F9] text-[10px] text-[#667085] font-mono">
+                <span className="truncate max-w-[130px]">{exec.executionId}</span>
+                <span>{formatDateTime(exec.timestamp)}</span>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Desktop & Tablet Executions Table View (>= sm) */}
+      <div className="hidden sm:block overflow-x-auto rounded-xl border border-[#E2E8F0] bg-white shadow-2xs min-w-0 max-w-full">
         <table className="w-full text-left text-xs min-w-[750px]">
           <thead className="bg-[#F8FAFC] text-[#667085] uppercase text-[10px] font-mono tracking-wider border-b border-[#E2E8F0]">
             <tr>

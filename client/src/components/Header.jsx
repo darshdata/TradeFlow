@@ -31,22 +31,22 @@ export function Header({ onOpenMobile }) {
   const currentTitle = ROUTE_TITLES[location.pathname] || 'Trading Terminal';
 
   return (
-    <header className="h-14 bg-white border-b border-[#E2E8F0] sticky top-0 z-20 px-4 sm:px-6 flex items-center justify-between">
+    <header className="h-14 bg-white border-b border-[#E2E8F0] sticky top-0 z-20 px-2.5 sm:px-6 flex items-center justify-between w-full max-w-full overflow-hidden">
       {/* Left: Mobile Toggle & Page Context */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
         <button
           onClick={onOpenMobile}
-          className="lg:hidden p-1.5 -ml-1 rounded-md text-[#667085] hover:text-[#172B4D] hover:bg-[#F1F5F9] transition-colors"
+          className="lg:hidden p-1.5 -ml-1 rounded-md text-[#667085] hover:text-[#172B4D] hover:bg-[#F1F5F9] transition-colors shrink-0"
           aria-label="Open navigation menu"
         >
           <Menu className="w-5 h-5" />
         </button>
 
-        <div className="flex items-center gap-2">
-          <h1 className="text-sm font-semibold text-[#172B4D] truncate">
+        <div className="flex items-center gap-2 min-w-0">
+          <h1 className="text-xs sm:text-sm font-semibold text-[#172B4D] truncate max-w-[85px] min-[360px]:max-w-[120px] sm:max-w-none">
             {currentTitle}
           </h1>
-          <span className="hidden sm:inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#E6F4EF] text-[#087F5B] border border-[#A7F3D0]">
+          <span className="hidden md:inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#E6F4EF] text-[#087F5B] border border-[#A7F3D0] shrink-0">
             <span className="w-1.5 h-1.5 rounded-full bg-[#087F5B] animate-pulse" />
             FIFO Engine Active
           </span>
@@ -54,23 +54,23 @@ export function Header({ onOpenMobile }) {
       </div>
 
       {/* Right: Cash Balances & User Profile Menu */}
-      <div className="flex items-center gap-2.5 sm:gap-4">
+      <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
         {/* Account Balances Pill */}
         {account && (
-          <div className="flex items-center gap-2 bg-[#F8FAFC] border border-[#E2E8F0] px-2.5 sm:px-3 py-1 rounded-md text-xs">
-            <div className="flex items-center gap-1.5">
-              <Wallet className="w-3.5 h-3.5 text-[#087F5B]" />
+          <div className="flex items-center gap-1.5 bg-[#F8FAFC] border border-[#E2E8F0] px-2 sm:px-3 py-1 rounded-md text-[11px] sm:text-xs">
+            <div className="flex items-center gap-1">
+              <Wallet className="w-3.5 h-3.5 text-[#087F5B] shrink-0" />
               <span className="text-[#667085] hidden md:inline">Available:</span>
-              <span className="font-mono font-semibold text-[#087F5B]">
+              <span className="font-mono font-semibold text-[#087F5B] whitespace-nowrap">
                 {formatINR(account.availableCashPaise)}
               </span>
             </div>
 
             {account.reservedCashPaise > 0 && (
-              <div className="flex items-center gap-1 text-[#667085] pl-2 border-l border-[#E2E8F0]">
-                <Lock className="w-3 h-3 text-[#B7791F]" />
-                <span className="text-[#667085] hidden md:inline">Reserved:</span>
-                <span className="font-mono font-medium text-[#B7791F]">
+              <div className="flex items-center gap-1 text-[#667085] pl-1.5 border-l border-[#E2E8F0]">
+                <Lock className="w-3 h-3 text-[#B7791F] shrink-0" />
+                <span className="text-[#667085] hidden lg:inline">Reserved:</span>
+                <span className="font-mono font-medium text-[#B7791F] whitespace-nowrap">
                   {formatINR(account.reservedCashPaise)}
                 </span>
               </div>
@@ -83,15 +83,16 @@ export function Header({ onOpenMobile }) {
           <div className="relative">
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="flex items-center gap-2 bg-white hover:bg-[#F8FAFC] border border-[#E2E8F0] px-2.5 py-1 rounded-md text-xs text-[#172B4D] transition-colors shadow-2xs"
+              className="flex items-center gap-1.5 bg-white hover:bg-[#F8FAFC] border border-[#E2E8F0] p-1 sm:px-2.5 sm:py-1 rounded-md text-xs text-[#172B4D] transition-colors shadow-2xs"
+              title={user.name}
             >
-              <div className="w-6 h-6 rounded-full bg-[#E6F4EF] text-[#087F5B] font-bold text-[11px] flex items-center justify-center border border-[#A7F3D0]">
+              <div className="w-6 h-6 rounded-full bg-[#E6F4EF] text-[#087F5B] font-bold text-[11px] flex items-center justify-center border border-[#A7F3D0] shrink-0">
                 {user.name.charAt(0).toUpperCase()}
               </div>
               <span className="font-medium max-w-[100px] sm:max-w-[130px] truncate hidden sm:inline">
                 {user.name}
               </span>
-              <ChevronDown className="w-3.5 h-3.5 text-[#667085]" />
+              <ChevronDown className="w-3.5 h-3.5 text-[#667085] hidden sm:inline" />
             </button>
 
             {dropdownOpen && (

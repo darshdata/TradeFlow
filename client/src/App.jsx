@@ -37,7 +37,7 @@ function AppShell({ children }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <div className="min-h-screen flex bg-[#F5F7FA] text-[#172B4D] antialiased selection:bg-[#E6F4EF] selection:text-[#087F5B]">
+    <div className="min-h-screen flex bg-[#F5F7FA] text-[#172B4D] antialiased selection:bg-[#E6F4EF] selection:text-[#087F5B] w-full max-w-full overflow-x-hidden">
       {/* Sidebar (Desktop sticky + Mobile drawer) */}
       <Sidebar
         collapsed={collapsed}
@@ -47,15 +47,15 @@ function AppShell({ children }) {
       />
 
       {/* Main Content Viewport */}
-      <div className="flex-1 flex flex-col min-w-0 min-h-screen">
+      <div className="flex-1 flex flex-col min-w-0 max-w-full min-h-screen overflow-x-hidden">
         <Header onOpenMobile={() => setMobileOpen(true)} />
         <SimulatedBanner />
 
-        <main className="flex-1 max-w-7xl w-full mx-auto px-3.5 sm:px-6 lg:px-8 py-5">
+        <main className="flex-1 w-full max-w-7xl mx-auto px-2.5 sm:px-6 lg:px-8 py-3.5 sm:py-5 min-w-0 overflow-x-hidden">
           {children}
         </main>
 
-        <footer className="border-t border-[#E2E8F0] bg-white py-3.5 px-4 text-center text-xs text-[#667085] font-mono">
+        <footer className="border-t border-[#E2E8F0] bg-white py-3.5 px-4 text-center text-[11px] sm:text-xs text-[#667085] font-mono">
           TradeFlow Simulated Order Execution & Matching Platform • Deterministic Price-Time Priority FIFO Engine
         </footer>
       </div>

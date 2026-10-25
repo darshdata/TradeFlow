@@ -18,39 +18,39 @@ export function InstrumentSelector() {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between bg-white hover:bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3.5 py-2 text-left transition-colors shadow-2xs"
+        className="w-full flex items-center justify-between bg-white hover:bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-2.5 sm:px-3.5 py-2 text-left transition-colors shadow-2xs gap-2"
       >
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-[#E6F4EF] border border-[#A7F3D0] flex items-center justify-center font-bold text-[#087F5B] text-xs">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#E6F4EF] border border-[#A7F3D0] flex items-center justify-center font-bold text-[#087F5B] text-xs shrink-0">
             {selectedInstrument?.symbol.slice(0, 3)}
           </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-[#172B4D] text-sm">
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5">
+              <span className="font-bold text-[#172B4D] text-xs sm:text-sm truncate">
                 {selectedInstrument?.symbol || 'Select Stock'}
               </span>
-              <span className="text-[10px] bg-[#F1F5F9] text-[#667085] px-1.5 py-0.5 rounded font-mono font-medium border border-[#E2E8F0]">
+              <span className="text-[9px] sm:text-[10px] bg-[#F1F5F9] text-[#667085] px-1 py-0.5 rounded font-mono font-medium border border-[#E2E8F0] shrink-0">
                 NSE
               </span>
             </div>
-            <p className="text-[11px] text-[#667085] truncate max-w-[180px] sm:max-w-[220px]">
+            <p className="text-[10px] sm:text-[11px] text-[#667085] truncate max-w-[120px] sm:max-w-[200px]">
               {selectedInstrument?.displayName}
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 shrink-0">
           {selectedInstrument && (
-            <div className="text-right">
-              <span className="block font-mono font-bold text-[#172B4D] text-sm">
+            <div className="text-right hidden min-[380px]:block">
+              <span className="block font-mono font-bold text-[#172B4D] text-xs sm:text-sm">
                 {formatINR(selectedInstrument.lastPricePaise || selectedInstrument.simulatedReferencePricePaise)}
               </span>
-              <span className="text-[10px] text-[#667085]">
+              <span className="text-[9px] sm:text-[10px] text-[#667085]">
                 Ref: {formatINR(selectedInstrument.simulatedReferencePricePaise)}
               </span>
             </div>
           )}
-          <ChevronDown className="w-4 h-4 text-[#667085]" />
+          <ChevronDown className="w-4 h-4 text-[#667085] shrink-0" />
         </div>
       </button>
 

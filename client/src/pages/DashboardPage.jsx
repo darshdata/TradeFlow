@@ -59,9 +59,9 @@ export function DashboardPage() {
   return (
     <div className="space-y-6">
       {/* Welcome & Account Summary Banner */}
-      <div className="bg-white border border-[#E2E8F0] p-5 sm:p-6 rounded-2xl shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-white border border-[#E2E8F0] p-4 sm:p-6 rounded-2xl shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <span className="text-xs font-semibold px-2 py-0.5 rounded bg-[#E6F4EF] text-[#087F5B] border border-[#A7F3D0] font-mono">
               MARKET TERMINAL
             </span>
@@ -72,7 +72,7 @@ export function DashboardPage() {
               </span>
             )}
           </div>
-          <h1 className="text-xl font-bold text-[#172B4D] mt-1.5 tracking-tight">
+          <h1 className="text-lg sm:text-xl font-bold text-[#172B4D] mt-1.5 tracking-tight">
             Welcome back, {user?.name || 'Trader'}
           </h1>
           <p className="text-xs text-[#667085] mt-0.5">
@@ -80,10 +80,10 @@ export function DashboardPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 w-full sm:w-auto">
           <Link
             to="/terminal"
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#087F5B] hover:bg-[#066649] text-white text-xs font-semibold transition-all shadow-2xs"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-[#087F5B] hover:bg-[#066649] text-white text-xs font-semibold transition-all shadow-2xs"
           >
             <span>Open Trading Terminal</span>
             <ArrowRight className="w-4 h-4" />
@@ -92,51 +92,51 @@ export function DashboardPage() {
       </div>
 
       {/* KPI Financial Metric Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {/* Total Marked Portfolio Value */}
-        <div className="bg-white border border-[#E2E8F0] p-4.5 rounded-xl shadow-2xs space-y-1.5">
+        <div className="bg-white border border-[#E2E8F0] p-3.5 sm:p-4.5 rounded-xl shadow-2xs space-y-1">
           <div className="flex items-center justify-between text-[#667085] text-xs">
             <span className="font-medium">Total Portfolio Value</span>
             <PieChart className="w-4 h-4 text-[#087F5B]" />
           </div>
-          <div className="text-2xl font-bold font-mono text-[#172B4D] tracking-tight">
+          <div className="text-xl sm:text-2xl font-bold font-mono text-[#172B4D] tracking-tight">
             {formatINR(metrics?.totalPortfolioValuePaise || account?.totalCashPaise || 0)}
           </div>
-          <p className="text-[11px] text-[#667085]">Total Cash + Marked Stock Holdings</p>
+          <p className="text-[10px] sm:text-[11px] text-[#667085]">Total Cash + Marked Stock Holdings</p>
         </div>
 
         {/* Available Cash */}
-        <div className="bg-white border border-[#E2E8F0] p-4.5 rounded-xl shadow-2xs space-y-1.5">
+        <div className="bg-white border border-[#E2E8F0] p-3.5 sm:p-4.5 rounded-xl shadow-2xs space-y-1">
           <div className="flex items-center justify-between text-[#667085] text-xs">
             <span className="font-medium">Available Free Cash</span>
             <Wallet className="w-4 h-4 text-[#087F5B]" />
           </div>
-          <div className="text-2xl font-bold font-mono text-[#087F5B] tracking-tight">
+          <div className="text-xl sm:text-2xl font-bold font-mono text-[#087F5B] tracking-tight">
             {formatINR(account?.availableCashPaise || 0)}
           </div>
-          <p className="text-[11px] text-[#667085]">Free unreserved capital ready for orders</p>
+          <p className="text-[10px] sm:text-[11px] text-[#667085]">Free unreserved capital ready for orders</p>
         </div>
 
         {/* Reserved Cash */}
-        <div className="bg-white border border-[#E2E8F0] p-4.5 rounded-xl shadow-2xs space-y-1.5">
+        <div className="bg-white border border-[#E2E8F0] p-3.5 sm:p-4.5 rounded-xl shadow-2xs space-y-1">
           <div className="flex items-center justify-between text-[#667085] text-xs">
             <span className="font-medium">Reserved Cash</span>
             <Lock className="w-4 h-4 text-[#B7791F]" />
           </div>
-          <div className="text-2xl font-bold font-mono text-[#B7791F] tracking-tight">
+          <div className="text-xl sm:text-2xl font-bold font-mono text-[#B7791F] tracking-tight">
             {formatINR(account?.reservedCashPaise || 0)}
           </div>
-          <p className="text-[11px] text-[#667085]">Committed to active resting buy limit orders</p>
+          <p className="text-[10px] sm:text-[11px] text-[#667085]">Committed to active resting buy limit orders</p>
         </div>
 
         {/* Unrealized P&L */}
-        <div className="bg-white border border-[#E2E8F0] p-4.5 rounded-xl shadow-2xs space-y-1.5">
+        <div className="bg-white border border-[#E2E8F0] p-3.5 sm:p-4.5 rounded-xl shadow-2xs space-y-1">
           <div className="flex items-center justify-between text-[#667085] text-xs">
             <span className="font-medium">Unrealized P&L</span>
             <TrendingUp className="w-4 h-4 text-[#087F5B]" />
           </div>
           <div
-            className={`text-2xl font-bold font-mono tracking-tight ${
+            className={`text-xl sm:text-2xl font-bold font-mono tracking-tight ${
               (metrics?.totalUnrealizedPnlPaise || 0) >= 0
                 ? 'text-[#087F5B]'
                 : 'text-[#D64545]'
@@ -144,32 +144,79 @@ export function DashboardPage() {
           >
             {formatINR(metrics?.totalUnrealizedPnlPaise || 0)}
           </div>
-          <p className="text-[11px] text-[#667085]">Marked to current reference prices</p>
+          <p className="text-[10px] sm:text-[11px] text-[#667085]">Marked to current reference prices</p>
         </div>
       </div>
 
-      {/* Market Instruments Overview Table */}
-      <div className="bg-white border border-[#E2E8F0] rounded-xl p-5 space-y-4 shadow-2xs">
+      {/* Market Instruments Overview Table & Mobile Cards */}
+      <div className="bg-white border border-[#E2E8F0] rounded-xl p-4 sm:p-5 space-y-4 shadow-2xs">
         <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-3">
           <div>
-            <h3 className="font-semibold text-[#172B4D] text-sm flex items-center gap-2">
+            <h3 className="font-semibold text-[#172B4D] text-xs sm:text-sm flex items-center gap-2">
               <Activity className="w-4 h-4 text-[#087F5B]" />
               NSE Market Equities ({instruments.length})
             </h3>
-            <p className="text-[11px] text-[#667085]">
+            <p className="text-[10px] sm:text-[11px] text-[#667085]">
               Real-time simulated market instruments eligible for trading.
             </p>
           </div>
           <Link
             to="/terminal"
-            className="text-xs text-[#087F5B] hover:text-[#066649] font-medium flex items-center gap-1"
+            className="text-xs text-[#087F5B] hover:text-[#066649] font-medium flex items-center gap-1 shrink-0"
           >
             Trade Now
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
 
-        <div className="overflow-x-auto">
+        {/* Mobile Equities Card List (< sm) */}
+        <div className="sm:hidden space-y-2.5">
+          {instruments.map((inst) => (
+            <div
+              key={inst.symbol}
+              className="p-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl space-y-2 text-xs"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="font-bold text-[#172B4D] text-sm block">{inst.symbol}</span>
+                  <span className="text-[11px] text-[#667085] truncate block max-w-[170px]">
+                    {inst.displayName}
+                  </span>
+                </div>
+                <Link
+                  to={`/terminal?symbol=${inst.symbol}`}
+                  className="px-3 py-1 rounded-md bg-[#087F5B] text-white text-[11px] font-semibold hover:bg-[#066649] transition-colors"
+                >
+                  Trade
+                </Link>
+              </div>
+
+              <div className="grid grid-cols-2 min-[360px]:grid-cols-3 gap-2 pt-1 border-t border-[#E2E8F0] font-mono text-[11px]">
+                <div>
+                  <span className="text-[10px] text-[#667085] font-sans block">Last Price</span>
+                  <span className="font-bold text-[#172B4D]">
+                    {formatINR(inst.lastPricePaise || inst.simulatedReferencePricePaise)}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-[#667085] font-sans block">Ref Price</span>
+                  <span className="text-[#667085]">
+                    {formatINR(inst.simulatedReferencePricePaise)}
+                  </span>
+                </div>
+                <div className="col-span-2 min-[360px]:col-span-1">
+                  <span className="text-[10px] text-[#667085] font-sans block">Day Range</span>
+                  <span className="text-[#667085] text-[10px]">
+                    {formatINR(inst.dayLowPaise)} - {formatINR(inst.dayHighPaise)}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop & Tablet Equities Table (>= sm) */}
+        <div className="hidden sm:block overflow-x-auto min-w-0 max-w-full">
           <table className="w-full text-left text-xs min-w-[650px]">
             <thead className="bg-[#F8FAFC] text-[#667085] uppercase text-[10px] font-mono tracking-wider border-b border-[#E2E8F0]">
               <tr>
@@ -221,15 +268,15 @@ export function DashboardPage() {
       {/* Main Grid: Holdings Preview & Engine Stats */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Active Positions Summary (2 cols) */}
-        <div className="lg:col-span-2 bg-white border border-[#E2E8F0] rounded-xl p-5 space-y-4 shadow-2xs">
+        <div className="lg:col-span-2 bg-white border border-[#E2E8F0] rounded-xl p-4 sm:p-5 space-y-4 shadow-2xs">
           <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-3">
-            <h3 className="font-semibold text-[#172B4D] text-sm flex items-center gap-2">
+            <h3 className="font-semibold text-[#172B4D] text-xs sm:text-sm flex items-center gap-2">
               <TrendingUp className="w-4 h-4 text-[#087F5B]" />
               Active Stock Positions ({positions.length})
             </h3>
             <Link
               to="/portfolio"
-              className="text-xs text-[#087F5B] hover:text-[#066649] font-medium flex items-center gap-1"
+              className="text-xs text-[#087F5B] hover:text-[#066649] font-medium flex items-center gap-1 shrink-0"
             >
               Full Portfolio
               <ArrowRight className="w-3.5 h-3.5" />
@@ -243,14 +290,14 @@ export function DashboardPage() {
           ) : (
             <div className="divide-y divide-[#E2E8F0] font-mono text-xs">
               {positions.slice(0, 5).map((pos) => (
-                <div key={pos.instrument} className="py-2.5 flex items-center justify-between">
+                <div key={pos.instrument} className="py-2.5 flex flex-col min-[380px]:flex-row min-[380px]:items-center justify-between gap-1.5">
                   <div>
                     <span className="font-bold text-[#172B4D] font-sans block">{pos.instrument}</span>
                     <span className="text-[#667085] text-[11px]">
                       {formatQuantity(pos.ownedQuantity)} shares @ Avg {formatINR(pos.averageCostPricePaise)}
                     </span>
                   </div>
-                  <div className="text-right">
+                  <div className="min-[380px]:text-right">
                     <span className="font-semibold text-[#172B4D] block">
                       {formatINR(pos.marketValuePaise)}
                     </span>

@@ -69,8 +69,8 @@ export function OrdersPage() {
       </div>
 
       {/* Filter Tabs & Search */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#E2E8F0] pb-2">
-        <div className="flex items-center gap-1.5 overflow-x-auto max-w-full py-0.5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E2E8F0] pb-2">
+        <div className="flex items-center gap-1.5 overflow-x-auto max-w-full py-0.5 no-scrollbar shrink-0">
           {STATUS_TABS.map((tab) => (
             <button
               key={tab.id}
@@ -90,8 +90,8 @@ export function OrdersPage() {
         </div>
 
         {/* Instrument filter */}
-        <div className="flex items-center gap-2 text-xs">
-          <Filter className="w-3.5 h-3.5 text-[#667085]" />
+        <div className="flex items-center gap-2 text-xs w-full sm:w-auto">
+          <Filter className="w-3.5 h-3.5 text-[#667085] shrink-0" />
           <input
             type="text"
             placeholder="Filter by symbol (e.g. RELIANCE)"
@@ -100,7 +100,7 @@ export function OrdersPage() {
               setInstrumentFilter(e.target.value.toUpperCase());
               setPagination((prev) => ({ ...prev, page: 1 }));
             }}
-            className="bg-white border border-[#CBD5E1] rounded-lg px-3 py-1.5 text-xs text-[#172B4D] font-mono placeholder-[#94A3B8] focus:outline-hidden focus:border-[#087F5B] focus:ring-1 focus:ring-[#087F5B]"
+            className="w-full sm:w-56 bg-white border border-[#CBD5E1] rounded-lg px-3 py-1.5 text-xs text-[#172B4D] font-mono placeholder-[#94A3B8] focus:outline-hidden focus:border-[#087F5B] focus:ring-1 focus:ring-[#087F5B]"
           />
         </div>
       </div>

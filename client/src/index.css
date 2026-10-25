@@ -21,6 +21,15 @@
     --info-blue: #2563EB;
   }
 
+  html,
+  body,
+  #root {
+    max-width: 100vw;
+    overflow-x: hidden;
+    position: relative;
+    width: 100%;
+  }
+
   body {
     background-color: #F5F7FA;
     color: #172B4D;
@@ -28,15 +37,14 @@
     min-height: 100vh;
     margin: 0;
     padding: 0;
-    overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
   /* Compact scrollbars for financial data tables */
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 5px;
+    height: 5px;
   }
   ::-webkit-scrollbar-track {
     background: #F1F5F9;
@@ -52,6 +60,15 @@
 
 .tabular-nums {
   font-variant-numeric: tabular-nums;
+}
+
+/* Hide scrollbar for clean tab carousels */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 /* Subtle data-focused shadows for light financial terminal */

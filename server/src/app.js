@@ -1,0 +1,51 @@
+import express from 'express';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import { env } from './config/env.js';
+import apiRoutes from './routes/api.js';
+import healthRoutes from './routes/healthRoutes.js';
+import { errorHandler } from './middleware/errorHandler.js';
+import { NotFoundError } from './utils/errors.js';
+
+export function createApp() {
+  const app = express();
+
+  // Explicit CORS configuration
+  const allowedOrigins = [env.CLIENT_URL, 'http://localhost:5174', 'http://127.0.0.1:5174'];
+  app.use(
+    cors({
+      origin: (origin, callback) => {
+        // Allow requests with no origin (e.g. mobile apps, curl, server-to-server)
+        if (!origin || allowedOrigins.includes(origin)) {
+          callback(null, true);
+        } else {
+          callback(new Error(`Origin ${origin} not allowed by CORS`));
+        }
+      },
+      credentials: true,
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization', 'Idempotency-Key', 'X-Requested-With'],
+    })
+  );
+
+  // Parsers with reasonable size limits
+  app.use(express.json({ limit: '100kb' }));
+  app.use(express.urlencoded({ extended: true, limit: '100kb' }));
+  app.use(cookieParser());
+
+  // Health check routes
+  app.use('/api/health', healthRoutes);
+
+  // API v1 routes
+  app.use('/api/v1', apiRoutes);
+
+  // 404 handler for undefined endpoints
+  app.use((req, res, next) => {
+    next(new NotFoundError(`Cannot ${req.method} ${req.originalUrl}`));
+  });
+
+  // Centralized error handling middleware
+  app.use(errorHandler);
+
+  return app;
+}

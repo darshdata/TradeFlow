@@ -1,0 +1,79 @@
+// System-wide constants for TradeFlow
+
+export const ORDER_TYPES = {
+  MARKET: 'MARKET',
+  LIMIT: 'LIMIT',
+};
+
+export const ORDER_SIDES = {
+  BUY: 'BUY',
+  SELL: 'SELL',
+};
+
+export const ORDER_STATUSES = {
+  NEW: 'NEW',
+  OPEN: 'OPEN',
+  PARTIALLY_FILLED: 'PARTIALLY_FILLED',
+  FILLED: 'FILLED',
+  CANCELLED: 'CANCELLED',
+  REJECTED: 'REJECTED',
+};
+
+export const TERMINAL_ORDER_STATUSES = new Set([
+  ORDER_STATUSES.FILLED,
+  ORDER_STATUSES.CANCELLED,
+  ORDER_STATUSES.REJECTED,
+]);
+
+export const CANCELLABLE_ORDER_STATUSES = new Set([
+  ORDER_STATUSES.NEW,
+  ORDER_STATUSES.OPEN,
+  ORDER_STATUSES.PARTIALLY_FILLED,
+]);
+
+export const VALID_ORDER_TRANSITIONS = {
+  [ORDER_STATUSES.NEW]: new Set([
+    ORDER_STATUSES.OPEN,
+    ORDER_STATUSES.PARTIALLY_FILLED,
+    ORDER_STATUSES.FILLED,
+    ORDER_STATUSES.CANCELLED,
+    ORDER_STATUSES.REJECTED,
+  ]),
+  [ORDER_STATUSES.OPEN]: new Set([
+    ORDER_STATUSES.PARTIALLY_FILLED,
+    ORDER_STATUSES.FILLED,
+    ORDER_STATUSES.CANCELLED,
+  ]),
+  [ORDER_STATUSES.PARTIALLY_FILLED]: new Set([
+    ORDER_STATUSES.FILLED,
+    ORDER_STATUSES.CANCELLED,
+  ]),
+  [ORDER_STATUSES.FILLED]: new Set([]),
+  [ORDER_STATUSES.CANCELLED]: new Set([]),
+  [ORDER_STATUSES.REJECTED]: new Set([]),
+};
+
+export const ORDER_EVENTS = {
+  ORDER_ACCEPTED: 'ORDER_ACCEPTED',
+  ORDER_OPENED: 'ORDER_OPENED',
+  ORDER_PARTIALLY_FILLED: 'ORDER_PARTIALLY_FILLED',
+  ORDER_FILLED: 'ORDER_FILLED',
+  ORDER_CANCELLED: 'ORDER_CANCELLED',
+  ORDER_REJECTED: 'ORDER_REJECTED',
+  RESERVATION_CREATED: 'RESERVATION_CREATED',
+  RESERVATION_RELEASED: 'RESERVATION_RELEASED',
+};
+
+// Self-trade prevention policy: SKIP_AND_PREVENT
+// If crossing counterparty has same userId, matching is prevented between them to eliminate wash trades.
+export const STP_POLICY = 'PREVENT_SELF_TRADE';
+
+// Currency & Financial Units
+export const PAISE_PER_RUPEE = 100;
+// 100,000 INR = 10,000,000 Paise initial simulated balance for new accounts
+export const DEFAULT_INITIAL_CASH_PAISE = 10_000_000;
+// Maximum collar allowed for market buy estimation: 5% above best ask / reference price
+export const MARKET_BUY_BUFFER_PERCENT = 5;
+
+// System Liquidity Provider User ID
+export const SYSTEM_LIQUIDITY_USER_ID = '000000000000000000000001';

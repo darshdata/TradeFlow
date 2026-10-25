@@ -7,6 +7,7 @@ import { MarketService } from '../src/services/marketService.js';
 import { Order } from '../src/models/Order.js';
 import { Account } from '../src/models/Account.js';
 import { Position } from '../src/models/Position.js';
+import { PortfolioService } from '../src/services/portfolioService.js';
 import { orderBookManager } from '../src/engine/orderBook.js';
 import {
   ORDER_TYPES,
@@ -271,5 +272,179 @@ describe('OrderService & Reservation Accounting (Transactional Tests)', () => {
     expect(recovered).toHaveLength(1);
     expect(recovered[0].remainingQuantity).toBe(15);
     expect(recovered[0].priceInPaise).toBe(260000);
+  });
+
+  it('concurrency: simultaneous BUY orders competing for cash prevent negative balance & over-reservation', async () => {
+    // User A has ₹1,00,000 (10,000,000 paise).
+    // Fire 2 simultaneous BUY orders of 30 shares @ ₹2,500 = ₹75,000 (7,500,000 paise) each.
+    // Total needed: 15,000,000 paise. Only one order should succeed!
+    const results = await Promise.allSettled([
+      OrderService.submitOrder({
+        userId: userA.id,
+        instrument: 'RELIANCE',
+        side: ORDER_SIDES.BUY,
+        orderType: ORDER_TYPES.LIMIT,
+        priceInPaise: 250000,
+        quantity: 30,
+      }),
+      OrderService.submitOrder({
+        userId: userA.id,
+        instrument: 'RELIANCE',
+        side: ORDER_SIDES.BUY,
+        orderType: ORDER_TYPES.LIMIT,
+        priceInPaise: 250000,
+        quantity: 30,
+      }),
+    ]);
+
+    const fulfilled = results.filter((r) => r.status === 'fulfilled');
+    const rejected = results.filter((r) => r.status === 'rejected');
+
+    expect(fulfilled).toHaveLength(1);
+    expect(rejected).toHaveLength(1);
+    expect(rejected[0].reason.name).toBe('InsufficientFundsError');
+
+    const account = await Account.findOne({ userId: userA.id });
+    expect(account.reservedCashPaise).toBe(7500000);
+    expect(account.totalCashPaise).toBe(10000000);
+    expect(account.availableCashPaise).toBe(2500000);
+    expect(account.availableCashPaise).toBeGreaterThanOrEqual(0);
+  });
+
+  it('concurrency: simultaneous SELL orders competing for shares prevent over-allocation', async () => {
+    // User B has 50 shares of RELIANCE.
+    // Fire 2 simultaneous SELL orders of 35 shares each.
+    // Total needed: 70 shares > 50 shares owned. Only one order should succeed!
+    const results = await Promise.allSettled([
+      OrderService.submitOrder({
+        userId: userB.id,
+        instrument: 'RELIANCE',
+        side: ORDER_SIDES.SELL,
+        orderType: ORDER_TYPES.LIMIT,
+        priceInPaise: 260000,
+        quantity: 35,
+      }),
+      OrderService.submitOrder({
+        userId: userB.id,
+        instrument: 'RELIANCE',
+        side: ORDER_SIDES.SELL,
+        orderType: ORDER_TYPES.LIMIT,
+        priceInPaise: 260000,
+        quantity: 35,
+      }),
+    ]);
+
+    const fulfilled = results.filter((r) => r.status === 'fulfilled');
+    const rejected = results.filter((r) => r.status === 'rejected');
+
+    expect(fulfilled).toHaveLength(1);
+    expect(rejected).toHaveLength(1);
+    expect(rejected[0].reason.name).toBe('InsufficientSharesError');
+
+    const pos = await Position.findOne({ userId: userB.id, instrument: 'RELIANCE' });
+    expect(pos.reservedQuantity).toBe(35);
+    expect(pos.ownedQuantity).toBe(50);
+    expect(pos.availableQuantity).toBe(15);
+    expect(pos.availableQuantity).toBeGreaterThanOrEqual(0);
+  });
+
+  it('self-trade prevention: user cannot trade against their own resting order', async () => {
+    // User A places a resting SELL order @ 2500 for 10 shares
+    // First give User A 10 shares of RELIANCE
+    await Position.create({
+      userId: userA.id,
+      instrument: 'RELIANCE',
+      ownedQuantity: 10,
+      reservedQuantity: 0,
+      averageCostPricePaise: 240000,
+      totalCostBasisPaise: 2400000,
+    });
+
+    const { order: sellOrder } = await OrderService.submitOrder({
+      userId: userA.id,
+      instrument: 'RELIANCE',
+      side: ORDER_SIDES.SELL,
+      orderType: ORDER_TYPES.LIMIT,
+      priceInPaise: 250000,
+      quantity: 10,
+    });
+
+    expect(sellOrder.status).toBe(ORDER_STATUSES.OPEN);
+
+    // User A now places an aggressive BUY order @ 2500 for 10 shares
+    const { order: buyOrder, executions } = await OrderService.submitOrder({
+      userId: userA.id,
+      instrument: 'RELIANCE',
+      side: ORDER_SIDES.BUY,
+      orderType: ORDER_TYPES.LIMIT,
+      priceInPaise: 250000,
+      quantity: 10,
+    });
+
+    // Zero executions should occur because self-trade is prohibited
+    expect(executions).toHaveLength(0);
+    expect(buyOrder.status).toBe(ORDER_STATUSES.OPEN);
+
+    // Both orders must still be resting peacefully on their respective sides
+    const resting = orderBookManager.getRestingOrders('RELIANCE');
+    expect(resting).toHaveLength(2);
+  });
+
+  it('financial math: selling entire position resets averageCostPricePaise and totalCostBasisPaise to 0', async () => {
+    // User B has 50 shares @ ₹2,400 (240000 paise).
+    // User B places resting sell order for all 50 shares @ ₹2,500 (250000 paise).
+    await OrderService.submitOrder({
+      userId: userB.id,
+      instrument: 'RELIANCE',
+      side: ORDER_SIDES.SELL,
+      orderType: ORDER_TYPES.LIMIT,
+      priceInPaise: 250000,
+      quantity: 50,
+    });
+
+    // User A buys all 50 shares @ ₹2,500 (₹1,25,000 - but User A only has 100k, so let's fund User A)
+    await Account.updateOne({ userId: userA.id }, { $set: { totalCashPaise: 20000000 } });
+
+    await OrderService.submitOrder({
+      userId: userA.id,
+      instrument: 'RELIANCE',
+      side: ORDER_SIDES.BUY,
+      orderType: ORDER_TYPES.LIMIT,
+      priceInPaise: 250000,
+      quantity: 50,
+    });
+
+    // Check User B's position
+    const posB = await Position.findOne({ userId: userB.id, instrument: 'RELIANCE' });
+    expect(posB.ownedQuantity).toBe(0);
+    expect(posB.reservedQuantity).toBe(0);
+    expect(posB.averageCostPricePaise).toBe(0);
+    expect(posB.totalCostBasisPaise).toBe(0);
+    // Realized P&L = (250000 - 240000) * 50 = 500,000 paise (₹5,000)
+    expect(posB.realizedPnlPaise).toBe(500000);
+  });
+
+  it('portfolio reconciliation: isReconciled accurately validates reservation invariant', async () => {
+    // Submit an open buy order
+    await OrderService.submitOrder({
+      userId: userA.id,
+      instrument: 'RELIANCE',
+      side: ORDER_SIDES.BUY,
+      orderType: ORDER_TYPES.LIMIT,
+      priceInPaise: 250000,
+      quantity: 10,
+    });
+
+    // Valid state
+    const summaryClean = await PortfolioService.getSummary(userA.id);
+    expect(summaryClean.audit.isReconciled).toBe(true);
+    expect(summaryClean.audit.sumActiveBuyReservations).toBe(2500000);
+    expect(summaryClean.audit.recordedReservedCashPaise).toBe(2500000);
+
+    // Induce artificial reservation corruption
+    await Account.updateOne({ userId: userA.id }, { $inc: { reservedCashPaise: 5000 } });
+
+    const summaryCorrupt = await PortfolioService.getSummary(userA.id);
+    expect(summaryCorrupt.audit.isReconciled).toBe(false);
   });
 });

@@ -6,7 +6,6 @@ import {
   Briefcase,
   Wallet,
   Lock,
-  TrendingUp,
   ShieldCheck,
   CheckCircle,
   PieChart as PieIcon,

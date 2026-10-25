@@ -240,9 +240,12 @@ export class OrderService {
 
         // Update Buyer account and position
         const isBuyerTaker = side === ORDER_SIDES.BUY;
+        const restingMakerOrder = updatedRestingOrders.find(
+          (r) => (r._id || r.id).toString() === execData.buyOrderId.toString()
+        );
         const buyerReservedUnitPrice = isBuyerTaker
           ? reservedPrice
-          : (await Order.findById(execData.buyOrderId).session(session)).priceInPaise;
+          : (restingMakerOrder ? restingMakerOrder.priceInPaise : execData.priceInPaise);
 
         const buyerReservedReleased = buyerReservedUnitPrice * execData.quantity;
 
@@ -311,17 +314,30 @@ export class OrderService {
           sellerPosition.reservedQuantity -= execData.quantity;
           sellerPosition.totalCostBasisPaise = Math.max(0, sellerPosition.totalCostBasisPaise - costOfSharesSold);
           sellerPosition.realizedPnlPaise += realizedPnl;
+          if (sellerPosition.ownedQuantity === 0) {
+            sellerPosition.averageCostPricePaise = 0;
+            sellerPosition.totalCostBasisPaise = 0;
+          }
           await sellerPosition.save({ session });
         }
       }
 
       // 4e. Persist Updated Resting Orders
       for (const updatedResting of updatedRestingOrders) {
+        const remainingReservedCash = updatedResting.side === ORDER_SIDES.BUY
+          ? updatedResting.priceInPaise * updatedResting.remainingQuantity
+          : 0;
+        const remainingReservedShares = updatedResting.side === ORDER_SIDES.SELL
+          ? updatedResting.remainingQuantity
+          : 0;
+
         await Order.findByIdAndUpdate(
           updatedResting._id || updatedResting.id,
           {
             filledQuantity: updatedResting.filledQuantity,
             remainingQuantity: updatedResting.remainingQuantity,
+            reservedCashPaise: remainingReservedCash,
+            reservedQuantity: remainingReservedShares,
             status: updatedResting.status,
             averageExecutionPriceInPaise: updatedResting.averageExecutionPriceInPaise,
             updatedAt: new Date(),
@@ -344,9 +360,6 @@ export class OrderService {
           },
         });
         await restingEvent.save({ session });
-
-        // Update memory book
-        orderBookManager.addOrUpdateOrder(updatedResting);
       }
 
       // 4f. Finalize Incoming Order State
@@ -402,8 +415,6 @@ export class OrderService {
       } else {
         // Limit order
         if (order.remainingQuantity > 0) {
-          // Limit order rests on book
-          orderBookManager.addOrUpdateOrder(order.toObject());
           const openEvent = new OrderEvent({
             orderId: order._id,
             userId,
@@ -430,6 +441,14 @@ export class OrderService {
         }
       }
 
+      // Sync reservation balances on the order document
+      order.reservedCashPaise = order.side === ORDER_SIDES.BUY
+        ? (order.status === ORDER_STATUSES.FILLED || order.status === ORDER_STATUSES.CANCELLED ? 0 : order.priceInPaise * order.remainingQuantity)
+        : 0;
+      order.reservedQuantity = order.side === ORDER_SIDES.SELL
+        ? (order.status === ORDER_STATUSES.FILLED || order.status === ORDER_STATUSES.CANCELLED ? 0 : order.remainingQuantity)
+        : 0;
+
       await order.save({ session });
 
       // Update Instrument last price if trades occurred
@@ -450,8 +469,17 @@ export class OrderService {
       return {
         order,
         executions,
+        updatedRestingOrders,
       };
     });
+
+    // Update in-memory order book ONLY after MongoDB transaction commits successfully
+    for (const updatedResting of result.updatedRestingOrders) {
+      orderBookManager.addOrUpdateOrder(updatedResting);
+    }
+    if (result.order.status === ORDER_STATUSES.OPEN || result.order.status === ORDER_STATUSES.PARTIALLY_FILLED) {
+      orderBookManager.addOrUpdateOrder(result.order.toObject());
+    }
 
     const responseData = {
       order: result.order,
@@ -510,6 +538,8 @@ export class OrderService {
         },
         {
           status: ORDER_STATUSES.CANCELLED,
+          reservedCashPaise: 0,
+          reservedQuantity: 0,
           updatedAt: new Date(),
         },
         { new: true, session }
@@ -568,11 +598,11 @@ export class OrderService {
         { session }
       );
 
-      // Remove from in-memory book
-      orderBookManager.removeOrder(updated.instrument, updated._id);
-
       return updated;
     });
+
+    // Remove from in-memory book after successful transaction commit
+    orderBookManager.removeOrder(cancelledOrder.instrument, cancelledOrder._id);
 
     return cancelledOrder;
   }

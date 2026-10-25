@@ -62,24 +62,50 @@ export function hasReplicaSet() {
 
 /**
  * Runs a callback inside a MongoDB transaction if replica set is available,
- * or runs directly with optimistic concurrency checks if transactions are not supported.
+ * with automatic retries for transient transaction errors and commit retries.
+ * Falls back to direct execution if transactions are not supported.
  */
-export async function withTransaction(callback) {
+export async function withTransaction(callback, maxRetries = 3) {
   if (!isReplicaSet) {
     // Fallback for standalone dev environments
     return callback(null);
   }
 
-  const session = await mongoose.startSession();
-  session.startTransaction();
-  try {
-    const result = await callback(session);
-    await session.commitTransaction();
-    return result;
-  } catch (error) {
-    await session.abortTransaction();
-    throw error;
-  } finally {
-    session.endSession();
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    try {
+      const result = await callback(session);
+
+      // Attempt commit with retry on UnknownTransactionCommitResult
+      let commitSuccess = false;
+      while (!commitSuccess) {
+        try {
+          await session.commitTransaction();
+          commitSuccess = true;
+        } catch (commitErr) {
+          if (commitErr.hasErrorLabel && commitErr.hasErrorLabel('UnknownTransactionCommitResult')) {
+            logger.warn('UnknownTransactionCommitResult encountered. Retrying commit...');
+            continue;
+          }
+          throw commitErr;
+        }
+      }
+
+      return result;
+    } catch (error) {
+      await session.abortTransaction().catch(() => {});
+      const isTransient = error.hasErrorLabel && error.hasErrorLabel('TransientTransactionError');
+      if (isTransient && attempt < maxRetries) {
+        logger.warn(`Transient transaction error encountered (attempt ${attempt}/${maxRetries}), retrying...`, {
+          error: error.message,
+        });
+        await new Promise((resolve) => setTimeout(resolve, attempt * 50));
+        continue;
+      }
+      throw error;
+    } finally {
+      await session.endSession();
+    }
   }
 }

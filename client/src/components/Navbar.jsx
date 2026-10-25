@@ -10,7 +10,6 @@ import {
   Briefcase,
   History,
   LogOut,
-  User,
   Wallet,
   Lock,
 } from 'lucide-react';

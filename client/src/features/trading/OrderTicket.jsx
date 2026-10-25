@@ -59,7 +59,7 @@ export function OrderTicket({ prefilledPrice, onOrderSubmitted }) {
           const match = res.positions.find((p) => p.instrument === selectedSymbol);
           setUserPosition(match || null);
         }
-      } catch (err) {
+      } catch {
         // ignore
       }
     };

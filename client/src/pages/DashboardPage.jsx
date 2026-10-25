@@ -3,18 +3,16 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { api } from '../api/client.js';
 import { OrdersTable } from '../features/orders/OrdersTable.jsx';
-import { formatINR, formatDateTime, formatQuantity } from '../utils/formatters.js';
+import { formatINR, formatQuantity } from '../utils/formatters.js';
 import {
   Wallet,
   Lock,
   PieChart,
   ListOrdered,
-  CheckCircle2,
   TrendingUp,
   ArrowRight,
   ShieldCheck,
   History,
-  Layers,
 } from 'lucide-react';
 
 export function DashboardPage() {
@@ -45,6 +43,14 @@ export function DashboardPage() {
   const metrics = summary?.metrics;
   const positions = summary?.positions || [];
   const audit = summary?.audit;
+
+  if (loading && !summary) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="w-8 h-8 border-2 border-sky-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

@@ -76,7 +76,7 @@ export function OrderBookDepth({ onSelectPrice }) {
                 No active buy orders
               </div>
             ) : (
-              bids.map((level, idx) => {
+              bids.map((level) => {
                 const depthPct = Math.min(100, Math.round((level.totalQuantity / maxDepthQty) * 100));
                 return (
                   <div
@@ -129,7 +129,7 @@ export function OrderBookDepth({ onSelectPrice }) {
                 No active sell orders
               </div>
             ) : (
-              asks.map((level, idx) => {
+              asks.map((level) => {
                 const depthPct = Math.min(100, Math.round((level.totalQuantity / maxDepthQty) * 100));
                 return (
                   <div

@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../api/client.js';
 import { StatusBadge } from './StatusBadge.jsx';
-import { formatINR, formatDateTime, formatQuantity } from '../utils/formatters.js';
-import { X, Clock, CheckCircle2, ShieldCheck, ArrowRightLeft, AlertCircle } from 'lucide-react';
+import { X, ShieldCheck, ArrowRightLeft, AlertCircle } from 'lucide-react';
 
 export function OrderDetailModal({ orderId, isOpen, onClose }) {
   const [data, setData] = useState(null);

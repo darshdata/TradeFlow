@@ -184,6 +184,7 @@ export class MarketService {
 
     for (const bid of bidLevels) {
       const price = refPrice + bid.offset;
+      const notional = price * bid.qty;
       const order = await Order.create({
         orderId: `SEED_BID_${symbol}_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
         userId: lpUser._id,
@@ -194,11 +195,15 @@ export class MarketService {
         quantity: bid.qty,
         filledQuantity: 0,
         remainingQuantity: bid.qty,
-        reservedCashPaise: price * bid.qty,
+        reservedCashPaise: notional,
         reservedQuantity: 0,
         status: ORDER_STATUSES.OPEN,
       });
       orderBookManager.addOrUpdateOrder(order);
+      await Account.findOneAndUpdate(
+        { userId: lpUser._id },
+        { $inc: { reservedCashPaise: notional } }
+      );
     }
 
     for (const ask of askLevels) {
@@ -218,6 +223,10 @@ export class MarketService {
         status: ORDER_STATUSES.OPEN,
       });
       orderBookManager.addOrUpdateOrder(order);
+      await Position.findOneAndUpdate(
+        { userId: lpUser._id, instrument: symbol },
+        { $inc: { reservedQuantity: ask.qty } }
+      );
     }
 
     logger.info(`Seeded demo two-sided liquidity for ${symbol}`);

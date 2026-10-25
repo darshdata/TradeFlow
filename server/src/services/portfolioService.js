@@ -72,7 +72,8 @@ export class PortfolioService {
 
     const isReconciled =
       account.totalCashPaise >= account.reservedCashPaise &&
-      account.reservedCashPaise >= 0;
+      account.reservedCashPaise >= 0 &&
+      sumActiveBuyReservations === account.reservedCashPaise;
 
     const openOrdersCount = openOrders.length;
     const filledOrdersCount = await Order.countDocuments({

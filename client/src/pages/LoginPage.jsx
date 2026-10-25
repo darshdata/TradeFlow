@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
-import { TrendingUp, Lock, Mail, AlertCircle, ArrowRight, Sparkles } from 'lucide-react';
+import { Lock, Mail, AlertCircle, ArrowRight, Sparkles } from 'lucide-react';
 
 export function LoginPage() {
   const { login, register } = useAuth();
@@ -37,7 +37,7 @@ export function LoginPage() {
       // Attempt login first
       await login({ email: demoEmail, password: demoPassword });
       navigate('/');
-    } catch (err) {
+    } catch {
       // If demo user does not exist, auto-register
       try {
         await register({
@@ -56,15 +56,15 @@ export function LoginPage() {
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-6 bg-[#111622] p-8 rounded-2xl border border-slate-800 shadow-2xl">
+      <div className="max-w-md w-full space-y-6 bg-white p-8 rounded-2xl border border-[#E2E8F0] shadow-md">
         <div className="text-center space-y-2">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-sky-500 to-emerald-400 flex items-center justify-center text-slate-950 font-bold mx-auto shadow-lg shadow-sky-500/20 text-lg">
+          <div className="w-12 h-12 rounded-xl bg-[#087F5B] flex items-center justify-center text-white font-bold mx-auto shadow-2xs text-lg">
             TF
           </div>
-          <h2 className="text-xl font-bold text-slate-100 tracking-tight">
+          <h2 className="text-xl font-bold text-[#172B4D] tracking-tight">
             Sign in to TradeFlow
           </h2>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-[#667085]">
             Access your simulated trading terminal, order book, and cash ledger.
           </p>
         </div>
@@ -74,56 +74,58 @@ export function LoginPage() {
           type="button"
           onClick={handleDemoLogin}
           disabled={loading}
-          className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-sky-950/80 to-indigo-950/80 hover:from-sky-900/90 hover:to-indigo-900/90 border border-sky-800/80 text-sky-300 text-xs font-semibold transition-all shadow-sm"
+          className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-[#E6F4EF] hover:bg-[#A7F3D0] border border-[#A7F3D0] text-[#087F5B] text-xs font-semibold transition-all shadow-2xs"
         >
-          <Sparkles className="w-4 h-4 text-sky-400" />
+          <Sparkles className="w-4 h-4 text-[#087F5B]" />
           <span>Launch One-Click Demo Account (₹1,00,000 Cash)</span>
         </button>
 
         <div className="relative flex py-1 items-center">
-          <div className="grow border-t border-slate-800"></div>
-          <span className="shrink mx-3 text-slate-500 text-[10px] uppercase font-mono">Or with credentials</span>
-          <div className="grow border-t border-slate-800"></div>
+          <div className="flex-grow border-t border-[#E2E8F0]"></div>
+          <span className="shrink mx-3 text-[#94A3B8] text-[11px] uppercase font-mono">
+            or sign in with credentials
+          </span>
+          <div className="flex-grow border-t border-[#E2E8F0]"></div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
-            <div className="p-3 rounded-lg bg-rose-950/40 border border-rose-900/60 text-rose-300 text-xs flex items-center gap-2">
+            <div className="p-3 rounded-xl bg-[#FEF2F2] border border-[#FECACA] text-[#991B1B] text-xs flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{error}</span>
             </div>
           )}
 
           <div className="space-y-1">
-            <label className="block text-xs font-medium text-slate-300">
+            <label className="block text-xs font-medium text-[#172B4D]">
               Email Address
             </label>
             <div className="relative">
-              <Mail className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
+              <Mail className="w-4 h-4 text-[#94A3B8] absolute left-3 top-2.5" />
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="trader@example.com"
-                className="w-full bg-slate-900 border border-slate-700/80 rounded-lg pl-9 pr-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-hidden focus:border-sky-500"
+                placeholder="name@example.com"
+                className="w-full bg-white border border-[#CBD5E1] rounded-lg pl-9 pr-3 py-2 text-xs text-[#172B4D] placeholder-[#94A3B8] focus:outline-hidden focus:border-[#087F5B] focus:ring-1 focus:ring-[#087F5B]"
               />
             </div>
           </div>
 
           <div className="space-y-1">
-            <label className="block text-xs font-medium text-slate-300">
+            <label className="block text-xs font-medium text-[#172B4D]">
               Password
             </label>
             <div className="relative">
-              <Lock className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
+              <Lock className="w-4 h-4 text-[#94A3B8] absolute left-3 top-2.5" />
               <input
                 type="password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full bg-slate-900 border border-slate-700/80 rounded-lg pl-9 pr-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-hidden focus:border-sky-500"
+                className="w-full bg-white border border-[#CBD5E1] rounded-lg pl-9 pr-3 py-2 text-xs text-[#172B4D] placeholder-[#94A3B8] focus:outline-hidden focus:border-[#087F5B] focus:ring-1 focus:ring-[#087F5B]"
               />
             </div>
           </div>
@@ -131,23 +133,23 @@ export function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2.5 rounded-lg bg-sky-500 hover:bg-sky-400 text-slate-950 text-xs font-semibold transition-colors flex items-center justify-center gap-2 shadow-md shadow-sky-500/20 mt-2"
+            className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-[#087F5B] hover:bg-[#066649] text-white text-xs font-semibold transition-all shadow-2xs"
           >
             {loading ? (
-              <span className="w-4 h-4 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
+              <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : (
               <>
-                Sign In to Terminal
+                <span>Sign In to Terminal</span>
                 <ArrowRight className="w-4 h-4" />
               </>
             )}
           </button>
         </form>
 
-        <div className="text-center text-xs text-slate-400 pt-2 border-t border-slate-850">
-          Don't have an account yet?{' '}
-          <Link to="/register" className="text-sky-400 hover:text-sky-300 font-medium">
-            Create an Account
+        <div className="text-center text-xs text-[#667085] pt-2">
+          Don't have an account?{' '}
+          <Link to="/register" className="text-[#087F5B] hover:text-[#066649] font-medium">
+            Register for free
           </Link>
         </div>
       </div>

@@ -1,59 +1,68 @@
 import React from 'react';
+import {
+  Clock,
+  CheckCircle2,
+  AlertCircle,
+  XCircle,
+  CircleDot,
+  MinusCircle,
+} from 'lucide-react';
 
 const STATUS_CONFIGS = {
   NEW: {
     label: 'New',
-    bg: 'bg-slate-800',
-    text: 'text-slate-300',
-    border: 'border-slate-700',
-    dot: 'bg-slate-400',
+    bg: 'bg-[#F1F5F9]',
+    text: 'text-[#475569]',
+    border: 'border-[#CBD5E1]',
+    icon: Clock,
   },
   OPEN: {
     label: 'Open',
-    bg: 'bg-sky-950/60',
-    text: 'text-sky-400',
-    border: 'border-sky-800/80',
-    dot: 'bg-sky-400',
+    bg: 'bg-[#E0F2FE]',
+    text: 'text-[#0369A1]',
+    border: 'border-[#BAE6FD]',
+    icon: CircleDot,
   },
   PARTIALLY_FILLED: {
     label: 'Partially Filled',
-    bg: 'bg-amber-950/60',
-    text: 'text-amber-400',
-    border: 'border-amber-800/80',
-    dot: 'bg-amber-400',
+    bg: 'bg-[#FEF3C7]',
+    text: 'text-[#B45309]',
+    border: 'border-[#FDE68A]',
+    icon: Clock,
   },
   FILLED: {
     label: 'Filled',
-    bg: 'bg-emerald-950/60',
-    text: 'text-emerald-400',
-    border: 'border-emerald-800/80',
-    dot: 'bg-emerald-400',
+    bg: 'bg-[#E6F4EF]',
+    text: 'text-[#087F5B]',
+    border: 'border-[#A7F3D0]',
+    icon: CheckCircle2,
   },
   CANCELLED: {
     label: 'Cancelled',
-    bg: 'bg-zinc-900',
-    text: 'text-zinc-400',
-    border: 'border-zinc-800',
-    dot: 'bg-zinc-500',
+    bg: 'bg-[#F1F5F9]',
+    text: 'text-[#64748B]',
+    border: 'border-[#E2E8F0]',
+    icon: MinusCircle,
   },
   REJECTED: {
     label: 'Rejected',
-    bg: 'bg-rose-950/60',
-    text: 'text-rose-400',
-    border: 'border-rose-800/80',
-    dot: 'bg-rose-500',
+    bg: 'bg-[#FEE2E2]',
+    text: 'text-[#B91C1C]',
+    border: 'border-[#FECACA]',
+    icon: XCircle,
   },
 };
 
 export function StatusBadge({ status }) {
   const config = STATUS_CONFIGS[status] || STATUS_CONFIGS.NEW;
+  const Icon = config.icon || CircleDot;
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border ${config.bg} ${config.text} ${config.border}`}
+      className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium border ${config.bg} ${config.text} ${config.border}`}
     >
-      <span className={`w-1.5 h-1.5 rounded-full ${config.dot}`} />
-      {config.label}
+      <Icon className="w-3 h-3 shrink-0" />
+      <span>{config.label}</span>
     </span>
   );
 }

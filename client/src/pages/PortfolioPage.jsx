@@ -7,8 +7,7 @@ import {
   Wallet,
   Lock,
   ShieldCheck,
-  CheckCircle,
-  PieChart as PieIcon,
+  TrendingUp,
 } from 'lucide-react';
 import {
   PieChart,
@@ -19,12 +18,14 @@ import {
   Legend,
 } from 'recharts';
 
-const CHART_COLORS = ['#38bdf8', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16'];
+const CHART_COLORS = ['#087F5B', '#0D9488', '#2563EB', '#6366F1', '#D97706', '#E11D48', '#64748B'];
 
 export function PortfolioPage() {
   const [summary, setSummary] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const fetchPortfolio = async () => {
+    setLoading(true);
     try {
       const data = await api.portfolio.getSummary();
       setSummary(data);
@@ -59,97 +60,112 @@ export function PortfolioPage() {
     })),
   ].filter((item) => item.value > 0);
 
+  if (loading && !summary) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="w-8 h-8 border-2 border-[#087F5B] border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#111622] p-4 rounded-xl border border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 sm:p-5 rounded-xl border border-[#E2E8F0] shadow-2xs">
         <div>
-          <h1 className="text-base font-bold text-slate-100 flex items-center gap-2">
-            <Briefcase className="w-4 h-4 text-sky-400" />
+          <h1 className="text-base font-bold text-[#172B4D] flex items-center gap-2">
+            <Briefcase className="w-4 h-4 text-[#087F5B]" />
             Portfolio Valuations & Position Ledger
           </h1>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-[#667085]">
             Persistent simulated holdings, reservation invariants, and position-level cost basis tracking.
           </p>
         </div>
 
         {audit?.isReconciled && (
-          <div className="flex items-center gap-1.5 px-3 py-1 bg-emerald-950/40 border border-emerald-800/80 rounded-lg text-emerald-400 text-xs font-mono">
+          <div className="flex items-center gap-1.5 px-3 py-1 bg-[#E6F4EF] border border-[#A7F3D0] rounded-lg text-[#087F5B] text-xs font-mono">
             <ShieldCheck className="w-4 h-4" />
             <span>Accounting Invariants: Reconciled</span>
           </div>
         )}
       </div>
 
-      {/* KPI Cards Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      {/* KPI Financial Cards Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Portfolio Value */}
-        <div className="bg-[#111622] border border-slate-800 p-4 rounded-xl space-y-1">
-          <span className="text-slate-400 text-xs block">Total Portfolio Value</span>
-          <span className="text-xl font-bold font-mono text-slate-100 block">
+        <div className="bg-white border border-[#E2E8F0] p-4.5 rounded-xl shadow-2xs space-y-1.5">
+          <span className="text-[#667085] text-xs font-medium block">Total Portfolio Value</span>
+          <span className="text-2xl font-bold font-mono text-[#172B4D] block tracking-tight">
             {formatINR(metrics?.totalPortfolioValuePaise || 0)}
           </span>
-          <span className="text-[10px] text-slate-400">Total Cash + Stock Market Values</span>
+          <span className="text-[11px] text-[#667085]">Total Cash + Stock Market Values</span>
         </div>
 
         {/* Free Available Cash */}
-        <div className="bg-[#111622] border border-slate-800 p-4 rounded-xl space-y-1">
-          <span className="text-slate-400 text-xs block">Available Cash</span>
-          <span className="text-xl font-bold font-mono text-emerald-400 block">
+        <div className="bg-white border border-[#E2E8F0] p-4.5 rounded-xl shadow-2xs space-y-1.5">
+          <span className="text-[#667085] text-xs font-medium block">Available Cash</span>
+          <span className="text-2xl font-bold font-mono text-[#087F5B] block tracking-tight">
             {formatINR(account?.availableCashPaise || 0)}
           </span>
-          <span className="text-[10px] text-slate-400">Total Cash - Reserved Cash</span>
+          <span className="text-[11px] text-[#667085]">Free unreserved cash capital</span>
         </div>
 
-        {/* Total Stock Holdings Value */}
-        <div className="bg-[#111622] border border-slate-800 p-4 rounded-xl space-y-1">
-          <span className="text-slate-400 text-xs block">Stock Holdings Value</span>
-          <span className="text-xl font-bold font-mono text-sky-400 block">
-            {formatINR(metrics?.totalPositionsMarketValuePaise || 0)}
+        {/* Locked Reserved Cash */}
+        <div className="bg-white border border-[#E2E8F0] p-4.5 rounded-xl shadow-2xs space-y-1.5">
+          <span className="text-[#667085] text-xs font-medium block">Reserved Cash</span>
+          <span className="text-2xl font-bold font-mono text-[#B7791F] block tracking-tight">
+            {formatINR(account?.reservedCashPaise || 0)}
           </span>
-          <span className="text-[10px] text-slate-400">Across {positions.length} instruments</span>
+          <span className="text-[11px] text-[#667085]">Reserved against active buy orders</span>
         </div>
 
-        {/* Realized P&L */}
-        <div className="bg-[#111622] border border-slate-800 p-4 rounded-xl space-y-1">
-          <span className="text-slate-400 text-xs block">Realized P&L</span>
+        {/* Total Realized P&L */}
+        <div className="bg-white border border-[#E2E8F0] p-4.5 rounded-xl shadow-2xs space-y-1.5">
+          <span className="text-[#667085] text-xs font-medium block">Total Realized P&L</span>
           <span
-            className={`text-xl font-bold font-mono block ${
-              (metrics?.totalRealizedPnlPaise || 0) >= 0 ? 'text-emerald-400' : 'text-rose-400'
+            className={`text-2xl font-bold font-mono block tracking-tight ${
+              (metrics?.totalRealizedPnlPaise || 0) >= 0 ? 'text-[#087F5B]' : 'text-[#D64545]'
             }`}
           >
             {formatINR(metrics?.totalRealizedPnlPaise || 0)}
           </span>
-          <span className="text-[10px] text-slate-400">Locked profits/losses from sells</span>
+          <span className="text-[11px] text-[#667085]">Cumulative profit/loss from completed sales</span>
         </div>
       </div>
 
-      {/* Visual Asset Allocation & Invariant Audit */}
+      {/* Holdings & Asset Allocation Chart */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Asset Allocation Chart (Recharts) */}
-        <div className="lg:col-span-2 bg-[#111622] border border-slate-800 rounded-xl p-5 space-y-3">
-          <h3 className="font-semibold text-slate-100 text-sm flex items-center gap-2">
-            <PieIcon className="w-4 h-4 text-sky-400" />
-            Asset Allocation Breakdown
+        {/* Positions Table (2 cols) */}
+        <div className="lg:col-span-2 space-y-3">
+          <h2 className="text-sm font-semibold text-[#172B4D] flex items-center gap-2">
+            <TrendingUp className="w-4 h-4 text-[#087F5B]" />
+            Holding Positions ({positions.length})
+          </h2>
+          <PositionsTable positions={positions} />
+        </div>
+
+        {/* Asset Allocation Chart (1 col) */}
+        <div className="bg-white border border-[#E2E8F0] rounded-xl p-5 shadow-2xs flex flex-col justify-between">
+          <h3 className="font-semibold text-[#172B4D] text-xs border-b border-[#E2E8F0] pb-3">
+            Asset Value Allocation
           </h3>
 
-          <div className="h-64 w-full">
+          <div className="h-64 my-2">
             {chartData.length === 0 ? (
-              <div className="h-full flex items-center justify-center text-slate-500 text-xs">
-                No asset data to chart.
+              <div className="h-full flex items-center justify-center text-[#94A3B8] text-xs italic">
+                No asset valuation data
               </div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
                     data={chartData}
-                    dataKey="value"
-                    nameKey="name"
                     cx="50%"
                     cy="50%"
-                    outerRadius={80}
-                    innerRadius={45}
+                    innerRadius={55}
+                    outerRadius={85}
                     paddingAngle={3}
+                    dataKey="value"
                   >
                     {chartData.map((entry, index) => (
                       <Cell
@@ -159,59 +175,32 @@ export function PortfolioPage() {
                     ))}
                   </Pie>
                   <Tooltip
-                    formatter={(val) => [`₹${Number(val).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`, 'Amount']}
+                    formatter={(val) => [`₹${val.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`, 'Value']}
                     contentStyle={{
-                      backgroundColor: '#111622',
-                      borderColor: '#1e293b',
+                      backgroundColor: '#FFFFFF',
+                      borderColor: '#E2E8F0',
                       borderRadius: '8px',
                       fontSize: '11px',
-                      fontFamily: 'monospace',
+                      color: '#172B4D',
+                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
                     }}
                   />
                   <Legend
-                    wrapperStyle={{ fontSize: '11px', fontFamily: 'sans-serif' }}
+                    wrapperStyle={{ fontSize: '11px', color: '#667085' }}
+                    layout="horizontal"
+                    verticalAlign="bottom"
+                    align="center"
                   />
                 </PieChart>
               </ResponsiveContainer>
             )}
           </div>
-        </div>
 
-        {/* Ledger Invariant Audit Card */}
-        <div className="bg-[#111622] border border-slate-800 rounded-xl p-5 space-y-4">
-          <h3 className="font-semibold text-slate-100 text-sm flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            Accounting Invariant Audit
-          </h3>
-
-          <div className="space-y-2.5 text-xs">
-            <div className="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80 flex items-center justify-between">
-              <span className="text-slate-400">Total Cash Balance:</span>
-              <span className="font-mono text-slate-200">{formatINR(account?.totalCashPaise || 0)}</span>
-            </div>
-            <div className="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80 flex items-center justify-between">
-              <span className="text-slate-400">Active Bid Reservations:</span>
-              <span className="font-mono text-amber-400">{formatINR(audit?.sumActiveBuyReservations || 0)}</span>
-            </div>
-            <div className="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80 flex items-center justify-between">
-              <span className="text-slate-400">Ledger Reserved Cash:</span>
-              <span className="font-mono text-amber-400">{formatINR(account?.reservedCashPaise || 0)}</span>
-            </div>
-            <div className="p-2.5 rounded-lg bg-emerald-950/20 border border-emerald-900/50 flex items-center gap-2 text-emerald-300 text-[11px]">
-              <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
-              <span>Double-entry consistency enforced: Available cash is strictly guarded against negative balances.</span>
-            </div>
+          <div className="pt-3 border-t border-[#E2E8F0] text-[11px] text-[#667085] flex justify-between">
+            <span>Positions Count: {positions.length}</span>
+            <span className="font-mono text-[#087F5B]">Exact Allocation</span>
           </div>
         </div>
-      </div>
-
-      {/* Positions Holdings Table */}
-      <div className="space-y-3">
-        <h3 className="font-semibold text-slate-100 text-sm flex items-center gap-2">
-          <Briefcase className="w-4 h-4 text-sky-400" />
-          Stock Holdings Details
-        </h3>
-        <PositionsTable positions={positions} />
       </div>
     </div>
   );

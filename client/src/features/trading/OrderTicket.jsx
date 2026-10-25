@@ -15,7 +15,9 @@ import {
   Info,
   AlertCircle,
   CheckCircle,
-  ArrowRight,
+  Wallet,
+  Briefcase,
+  Layers,
 } from 'lucide-react';
 
 export function OrderTicket({ prefilledPrice, onOrderSubmitted }) {
@@ -152,19 +154,22 @@ export function OrderTicket({ prefilledPrice, onOrderSubmitted }) {
   };
 
   return (
-    <div className="bg-[#111622] border border-slate-800 rounded-xl p-4 flex flex-col h-full shadow-sm">
+    <div className="bg-white border border-[#E2E8F0] rounded-xl p-4 sm:p-5 flex flex-col h-full shadow-2xs">
       {/* Header */}
-      <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-        <h3 className="font-semibold text-slate-100 text-xs">Order Ticket</h3>
-        <span className="text-[10px] text-slate-400 font-mono">
-          Paise Precision: 1 INR = 100 Paise
+      <div className="flex items-center justify-between pb-3 border-b border-[#E2E8F0]">
+        <h3 className="font-semibold text-[#172B4D] text-xs flex items-center gap-1.5">
+          <Layers className="w-4 h-4 text-[#087F5B]" />
+          Order Ticket ({selectedSymbol})
+        </h3>
+        <span className="text-[10px] text-[#667085] font-mono">
+          Paise Math (1 INR = 100 Paise)
         </span>
       </div>
 
       <form onSubmit={handleSubmitClick} className="space-y-4 pt-3 flex-1 flex flex-col justify-between">
         <div className="space-y-4">
           {/* Side Selector (BUY vs SELL) */}
-          <div className="grid grid-cols-2 gap-1.5 p-1 bg-slate-900 border border-slate-800 rounded-lg">
+          <div className="grid grid-cols-2 gap-1 p-1 bg-[#F1F5F9] border border-[#E2E8F0] rounded-lg">
             <button
               type="button"
               onClick={() => {
@@ -173,12 +178,12 @@ export function OrderTicket({ prefilledPrice, onOrderSubmitted }) {
               }}
               className={`py-2 rounded-md font-semibold text-xs transition-all flex items-center justify-center gap-1.5 ${
                 side === 'BUY'
-                  ? 'bg-emerald-600 text-white shadow-md shadow-emerald-900/40'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-[#087F5B] text-white shadow-2xs'
+                  : 'text-[#667085] hover:text-[#172B4D]'
               }`}
             >
               <TrendingUp className="w-3.5 h-3.5" />
-              BUY
+              BUY {selectedSymbol}
             </button>
             <button
               type="button"
@@ -188,212 +193,254 @@ export function OrderTicket({ prefilledPrice, onOrderSubmitted }) {
               }}
               className={`py-2 rounded-md font-semibold text-xs transition-all flex items-center justify-center gap-1.5 ${
                 side === 'SELL'
-                  ? 'bg-rose-600 text-white shadow-md shadow-rose-900/40'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-[#D64545] text-white shadow-2xs'
+                  : 'text-[#667085] hover:text-[#172B4D]'
               }`}
             >
               <TrendingDown className="w-3.5 h-3.5" />
-              SELL
+              SELL {selectedSymbol}
             </button>
           </div>
 
           {/* Order Type (LIMIT vs MARKET) */}
-          <div className="grid grid-cols-2 gap-1.5 p-1 bg-slate-900 border border-slate-800 rounded-lg">
-            <button
-              type="button"
-              onClick={() => setOrderType('LIMIT')}
-              className={`py-1.5 rounded-md font-medium text-xs transition-all ${
-                orderType === 'LIMIT'
-                  ? 'bg-slate-800 text-sky-400 border border-slate-700/80 shadow-xs'
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              LIMIT ORDER
-            </button>
-            <button
-              type="button"
-              onClick={() => setOrderType('MARKET')}
-              className={`py-1.5 rounded-md font-medium text-xs transition-all ${
-                orderType === 'MARKET'
-                  ? 'bg-slate-800 text-sky-400 border border-slate-700/80 shadow-xs'
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              MARKET ORDER
-            </button>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-[#667085] w-20">Order Type:</span>
+            <div className="flex-1 grid grid-cols-2 gap-1.5 p-1 bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg">
+              <button
+                type="button"
+                onClick={() => setOrderType('LIMIT')}
+                className={`py-1 rounded text-xs font-medium transition-all ${
+                  orderType === 'LIMIT'
+                    ? 'bg-white text-[#172B4D] font-semibold shadow-2xs border border-[#E2E8F0]'
+                    : 'text-[#667085] hover:text-[#172B4D]'
+                }`}
+              >
+                Limit
+              </button>
+              <button
+                type="button"
+                onClick={() => setOrderType('MARKET')}
+                className={`py-1 rounded text-xs font-medium transition-all ${
+                  orderType === 'MARKET'
+                    ? 'bg-white text-[#172B4D] font-semibold shadow-2xs border border-[#E2E8F0]'
+                    : 'text-[#667085] hover:text-[#172B4D]'
+                }`}
+              >
+                Market (IOC)
+              </button>
+            </div>
           </div>
 
-          {/* Plain language explanation banner */}
-          <div className="bg-slate-900/80 border border-slate-800/80 p-2.5 rounded-lg text-[11px] text-slate-400 flex items-start gap-2">
-            <Info className="w-4 h-4 text-sky-400 shrink-0 mt-0.5" />
-            <p>
-              {orderType === 'LIMIT' ? (
-                <>
-                  <strong className="text-slate-200">Limit Order:</strong> Specifies your worst acceptable price. It rests on the order book until crossed by opposing liquidity.
-                </>
-              ) : (
-                <>
-                  <strong className="text-slate-200">Market Order:</strong> Attempts immediate execution against opposing resting orders. Unfilled remainder is cancelled (IOC policy).
-                </>
-              )}
-            </p>
-          </div>
-
-          {/* Limit Price Input (Only for LIMIT) */}
-          {orderType === 'LIMIT' && (
+          {/* Limit Price Input */}
+          {orderType === 'LIMIT' ? (
             <div className="space-y-1">
-              <div className="flex justify-between text-[11px]">
-                <label className="text-slate-300 font-medium">Limit Price (₹)</label>
-                <span className="text-slate-400 text-[10px]">
-                  Tick: {formatINR(selectedInstrument?.tickSizePaise || 5)}
+              <div className="flex items-center justify-between text-xs">
+                <label className="text-[#667085] font-medium">Limit Price (₹)</label>
+                <span className="text-[10px] text-[#667085] font-mono">
+                  Tick Size: {formatINR(selectedInstrument?.tickSizePaise || 5)}
                 </span>
               </div>
               <div className="relative">
-                <span className="absolute left-3 top-2.5 text-slate-400 font-mono text-xs">₹</span>
+                <span className="absolute left-3 top-2.5 text-xs text-[#667085] font-mono">₹</span>
                 <input
                   type="number"
                   step="0.05"
                   min="0.05"
+                  placeholder="0.00"
                   value={limitPrice}
                   onChange={(e) => setLimitPrice(e.target.value)}
-                  placeholder="0.00"
-                  className="w-full bg-slate-900 border border-slate-700/80 rounded-lg pl-7 pr-3 py-2 text-xs font-mono text-slate-100 placeholder-slate-500 focus:outline-hidden focus:border-sky-500"
+                  className={`w-full bg-white border rounded-lg pl-7 pr-3 py-2 text-xs font-mono text-[#172B4D] focus:outline-hidden focus:ring-1 ${
+                    !isTickValid
+                      ? 'border-[#D64545] focus:ring-[#D64545]'
+                      : 'border-[#CBD5E1] focus:border-[#087F5B] focus:ring-[#087F5B]'
+                  }`}
+                  required
                 />
               </div>
+              {!isTickValid && (
+                <p className="text-[10px] text-[#D64545] flex items-center gap-1">
+                  <AlertCircle className="w-3 h-3" />
+                  Price must align with {formatINR(selectedInstrument?.tickSizePaise || 5)} tick increments.
+                </p>
+              )}
+            </div>
+          ) : (
+            <div className="p-2.5 bg-[#F8FAFC] rounded-lg border border-[#E2E8F0] text-xs text-[#667085] flex items-start gap-2">
+              <Info className="w-4 h-4 text-[#2563EB] shrink-0 mt-0.5" />
+              <p className="text-[11px] leading-relaxed">
+                Market orders execute immediately against the opposing resting liquidity book. Any unfilled quantity is immediately cancelled (IOC policy).
+              </p>
             </div>
           )}
 
           {/* Quantity Input with Presets */}
           <div className="space-y-1.5">
-            <div className="flex justify-between text-[11px]">
-              <label className="text-slate-300 font-medium">Quantity (Shares)</label>
-              <div className="flex gap-1">
-                {[10, 25, 50, 100].map((preset) => (
-                  <button
-                    key={preset}
-                    type="button"
-                    onClick={() => handlePresetQty(preset)}
-                    className="px-1.5 py-0.5 text-[10px] bg-slate-850 hover:bg-slate-800 border border-slate-700/60 rounded text-slate-300 transition-colors"
-                  >
-                    {preset}
-                  </button>
-                ))}
-              </div>
+            <div className="flex items-center justify-between text-xs">
+              <label className="text-[#667085] font-medium">Quantity (Shares)</label>
+              {side === 'SELL' && (
+                <span className="text-[11px] text-[#667085]">
+                  Holding: <strong className="font-mono text-[#172B4D]">{availableShares}</strong>
+                </span>
+              )}
             </div>
             <input
               type="number"
               min="1"
               step="1"
+              placeholder="Shares"
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
-              placeholder="Number of shares"
-              className="w-full bg-slate-900 border border-slate-700/80 rounded-lg px-3 py-2 text-xs font-mono text-slate-100 placeholder-slate-500 focus:outline-hidden focus:border-sky-500"
+              className={`w-full bg-white border rounded-lg px-3 py-2 text-xs font-mono text-[#172B4D] focus:outline-hidden focus:ring-1 ${
+                hasInsufficientShares
+                  ? 'border-[#D64545] focus:ring-[#D64545]'
+                  : 'border-[#CBD5E1] focus:border-[#087F5B] focus:ring-[#087F5B]'
+              }`}
+              required
             />
+            {/* Presets */}
+            <div className="flex items-center gap-1.5 pt-1">
+              {[10, 25, 50, 100].map((preset) => (
+                <button
+                  key={preset}
+                  type="button"
+                  onClick={() => handlePresetQty(preset)}
+                  className={`flex-1 py-1 rounded text-[11px] font-mono border transition-colors ${
+                    numQty === preset
+                      ? 'bg-[#E6F4EF] text-[#087F5B] border-[#A7F3D0] font-semibold'
+                      : 'bg-white text-[#667085] border-[#E2E8F0] hover:bg-[#F8FAFC]'
+                  }`}
+                >
+                  +{preset}
+                </button>
+              ))}
+            </div>
           </div>
 
-          {/* Accounting Estimates & Invariant Breakdown */}
-          <div className="bg-slate-900/60 border border-slate-800/80 rounded-lg p-3 space-y-1.5 text-xs font-mono">
-            <div className="flex justify-between text-slate-400 text-[11px]">
-              <span>Est. Notional Value:</span>
-              <span className="text-slate-200 font-medium">{formatINR(estimatedNotionalPaise)}</span>
+          {/* Balances & Financial Reservation Breakdown */}
+          <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-3 space-y-2 text-xs">
+            <div className="flex items-center justify-between">
+              <span className="text-[#667085]">Estimated Notional:</span>
+              <span className="font-mono font-semibold text-[#172B4D]">
+                {formatINR(estimatedNotionalPaise)}
+              </span>
             </div>
 
             {side === 'BUY' ? (
-              <div className="flex justify-between text-slate-400 text-[11px]">
-                <span>Required Cash Reservation:</span>
-                <span className={`font-medium ${hasInsufficientCash ? 'text-rose-400' : 'text-slate-200'}`}>
-                  {formatINR(requiredCashPaise)}
-                </span>
-              </div>
+              <>
+                <div className="flex items-center justify-between text-[11px]">
+                  <span className="text-[#667085] flex items-center gap-1">
+                    <Wallet className="w-3 h-3 text-[#087F5B]" />
+                    Cash Reservation Required:
+                  </span>
+                  <span className="font-mono font-semibold text-[#087F5B]">
+                    {formatINR(requiredCashPaise)}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-[11px] pt-1 border-t border-[#E2E8F0]">
+                  <span className="text-[#667085]">Available Free Cash:</span>
+                  <span className={`font-mono ${hasInsufficientCash ? 'text-[#D64545] font-bold' : 'text-[#667085]'}`}>
+                    {formatINR(availableCashPaise)}
+                  </span>
+                </div>
+              </>
             ) : (
-              <div className="flex justify-between text-slate-400 text-[11px]">
-                <span>Available Shares Owned:</span>
-                <span className={`font-medium ${hasInsufficientShares ? 'text-rose-400' : 'text-slate-200'}`}>
+              <div className="flex items-center justify-between text-[11px] pt-1 border-t border-[#E2E8F0]">
+                <span className="text-[#667085] flex items-center gap-1">
+                  <Briefcase className="w-3 h-3 text-[#D64545]" />
+                  Shares Available to Sell:
+                </span>
+                <span className={`font-mono ${hasInsufficientShares ? 'text-[#D64545] font-bold' : 'text-[#667085]'}`}>
                   {formatQuantity(availableShares)} shares
                 </span>
               </div>
             )}
           </div>
 
-          {/* Error Banner */}
+          {/* Validation Feedback */}
           {errorMessage && (
-            <div className="p-2.5 rounded-lg bg-rose-950/40 border border-rose-900/60 text-rose-300 text-[11px] flex items-center gap-2 animate-in fade-in">
-              <AlertCircle className="w-4 h-4 shrink-0" />
-              <span>{errorMessage}</span>
+            <div className="p-3 bg-[#FEF2F2] border border-[#FECACA] rounded-xl text-xs text-[#991B1B] flex items-start gap-2 animate-in fade-in">
+              <AlertCircle className="w-4 h-4 text-[#D64545] shrink-0 mt-0.5" />
+              <p className="leading-tight">{errorMessage}</p>
             </div>
           )}
 
-          {/* Success Banner */}
+          {/* Success Result */}
           {successResult && (
-            <div className="p-3 rounded-lg bg-emerald-950/40 border border-emerald-900/60 text-emerald-300 text-[11px] space-y-1 animate-in fade-in">
-              <div className="flex items-center gap-1.5 font-semibold">
-                <CheckCircle className="w-4 h-4 text-emerald-400" />
-                <span>Order Processed: {successResult.order?.status}</span>
+            <div className="p-3 bg-[#F0FDF4] border border-[#BBF7D0] rounded-xl text-xs text-[#166534] space-y-1.5 animate-in fade-in">
+              <div className="flex items-center gap-1.5 font-semibold text-[#087F5B]">
+                <CheckCircle className="w-4 h-4" />
+                <span>Order Accepted: {successResult.order?.orderId}</span>
               </div>
-              <p className="text-[10px] text-emerald-400/90 font-mono">
-                Order Ref: {successResult.order?.orderId} | Executions: {successResult.executions?.length || 0}
-              </p>
+              <div className="text-[11px] text-[#166534] font-mono">
+                Status: {successResult.order?.status} • Filled: {formatQuantity(successResult.order?.filledQuantity)}/
+                {formatQuantity(successResult.order?.quantity)} shares
+              </div>
+              {successResult.executions?.length > 0 && (
+                <div className="text-[10px] text-[#087F5B] pt-1 border-t border-[#BBF7D0]">
+                  Matched {successResult.executions.length} execution(s) at avg price {formatINR(successResult.order?.averageExecutionPriceInPaise)}
+                </div>
+              )}
             </div>
           )}
         </div>
 
         {/* Submit Button */}
-        <div className="pt-2">
-          <button
-            type="submit"
-            disabled={!isFormValid || isSubmitting}
-            className={`w-full py-2.5 rounded-lg font-semibold text-xs tracking-wide transition-all shadow-md flex items-center justify-center gap-2 ${
-              side === 'BUY'
-                ? 'bg-emerald-600 hover:bg-emerald-500 text-white disabled:bg-emerald-950/40 disabled:text-emerald-800'
-                : 'bg-rose-600 hover:bg-rose-500 text-white disabled:bg-rose-950/40 disabled:text-rose-800'
-            }`}
-          >
-            {isSubmitting ? (
-              <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-            ) : (
-              <>
-                Place {side} {orderType} Order
-                <ArrowRight className="w-3.5 h-3.5" />
-              </>
-            )}
-          </button>
-        </div>
+        <button
+          type="submit"
+          disabled={!isFormValid || isSubmitting}
+          className={`w-full py-2.5 px-4 rounded-xl font-bold text-xs transition-all shadow-2xs flex items-center justify-center gap-2 ${
+            !isFormValid || isSubmitting
+              ? 'bg-[#E2E8F0] text-[#94A3B8] cursor-not-allowed'
+              : side === 'BUY'
+              ? 'bg-[#087F5B] hover:bg-[#066649] text-white'
+              : 'bg-[#D64545] hover:bg-[#B91C1C] text-white'
+          }`}
+        >
+          {isSubmitting && (
+            <span className="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+          )}
+          <span>
+            {side === 'BUY' ? 'Submit BUY Order' : 'Submit SELL Order'}
+          </span>
+        </button>
       </form>
 
       {/* Confirmation Modal */}
       <ConfirmModal
         isOpen={showConfirm}
         title={`Confirm ${side} Order`}
-        confirmText={`Confirm & Submit ${side}`}
+        confirmText={`Confirm & Place ${side}`}
         isDestructive={side === 'SELL'}
         isLoading={isSubmitting}
         onConfirm={handleConfirmOrder}
         onCancel={() => setShowConfirm(false)}
       >
-        <div className="space-y-2 bg-slate-900/80 p-3 rounded-lg border border-slate-800 font-mono text-[11px]">
-          <div className="flex justify-between">
-            <span className="text-slate-400 font-sans">Instrument:</span>
-            <span className="text-slate-200 font-bold">{selectedSymbol}</span>
+        <div className="space-y-2 font-mono text-xs text-[#172B4D]">
+          <div className="flex justify-between py-1 border-b border-[#E2E8F0]">
+            <span className="text-[#667085] font-sans">Instrument:</span>
+            <span className="font-bold">{selectedSymbol}</span>
           </div>
-          <div className="flex justify-between">
-            <span className="text-slate-400 font-sans">Side & Type:</span>
-            <span className={side === 'BUY' ? 'text-emerald-400' : 'text-rose-400'}>
+          <div className="flex justify-between py-1 border-b border-[#E2E8F0]">
+            <span className="text-[#667085] font-sans">Side & Type:</span>
+            <span className={side === 'BUY' ? 'text-[#087F5B] font-bold' : 'text-[#D64545] font-bold'}>
               {side} {orderType}
             </span>
           </div>
-          <div className="flex justify-between">
-            <span className="text-slate-400 font-sans">Quantity:</span>
-            <span className="text-slate-200">{formatQuantity(numQty)} shares</span>
+          <div className="flex justify-between py-1 border-b border-[#E2E8F0]">
+            <span className="text-[#667085] font-sans">Quantity:</span>
+            <span>{formatQuantity(numQty)} shares</span>
           </div>
-          <div className="flex justify-between">
-            <span className="text-slate-400 font-sans">Price:</span>
-            <span className="text-slate-200">
-              {orderType === 'LIMIT' ? formatINR(numPricePaise) : 'Market Price'}
+          {orderType === 'LIMIT' && (
+            <div className="flex justify-between py-1 border-b border-[#E2E8F0]">
+              <span className="text-[#667085] font-sans">Limit Price:</span>
+              <span>{formatINR(numPricePaise)}</span>
+            </div>
+          )}
+          <div className="flex justify-between py-1 text-sm font-bold text-[#172B4D] pt-1">
+            <span className="font-sans">Estimated Obligation:</span>
+            <span className={side === 'BUY' ? 'text-[#087F5B]' : 'text-[#D64545]'}>
+              {formatINR(estimatedNotionalPaise)}
             </span>
-          </div>
-          <div className="flex justify-between pt-1 border-t border-slate-800">
-            <span className="text-slate-400 font-sans">Est. Obligation:</span>
-            <span className="text-sky-400 font-bold">{formatINR(estimatedNotionalPaise)}</span>
           </div>
         </div>
       </ConfirmModal>

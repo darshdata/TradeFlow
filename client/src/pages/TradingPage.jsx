@@ -6,7 +6,7 @@ import { OrderBookDepth } from '../features/orderbook/OrderBookDepth.jsx';
 import { OrdersTable } from '../features/orders/OrdersTable.jsx';
 import { api } from '../api/client.js';
 import { formatINR, formatDateTime, formatQuantity } from '../utils/formatters.js';
-import { Activity, Clock, Layers } from 'lucide-react';
+import { Activity, Clock } from 'lucide-react';
 
 export function TradingPage() {
   const { selectedSymbol, selectedInstrument, refreshAll } = useTrading();
@@ -40,7 +40,7 @@ export function TradingPage() {
   return (
     <div className="space-y-5">
       {/* Top Bar: Instrument Selector & Market Info */}
-      <div className="bg-[#111622] border border-slate-800 rounded-xl p-3 sm:p-4 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-white border border-[#E2E8F0] rounded-xl p-3 sm:p-4 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="w-full md:w-80">
           <InstrumentSelector />
         </div>
@@ -48,26 +48,26 @@ export function TradingPage() {
         {selectedInstrument && (
           <div className="flex flex-wrap items-center gap-4 sm:gap-8 font-mono text-xs">
             <div>
-              <span className="text-[10px] text-slate-400 block font-sans">Simulated Last Price</span>
-              <span className="text-base font-bold text-slate-100">
+              <span className="text-[10px] text-[#667085] block font-sans">Simulated Last Price</span>
+              <span className="text-base font-bold text-[#172B4D]">
                 {formatINR(selectedInstrument.lastPricePaise || selectedInstrument.simulatedReferencePricePaise)}
               </span>
             </div>
             <div>
-              <span className="text-[10px] text-slate-400 block font-sans">Reference Price</span>
-              <span className="text-slate-300 font-medium">
+              <span className="text-[10px] text-[#667085] block font-sans">Reference Price</span>
+              <span className="text-[#172B4D] font-medium">
                 {formatINR(selectedInstrument.simulatedReferencePricePaise)}
               </span>
             </div>
             <div>
-              <span className="text-[10px] text-slate-400 block font-sans">Day Range</span>
-              <span className="text-slate-300">
+              <span className="text-[10px] text-[#667085] block font-sans">Day Range</span>
+              <span className="text-[#667085]">
                 {formatINR(selectedInstrument.dayLowPaise)} - {formatINR(selectedInstrument.dayHighPaise)}
               </span>
             </div>
             <div>
-              <span className="text-[10px] text-slate-400 block font-sans">Tick Size</span>
-              <span className="text-slate-300">
+              <span className="text-[10px] text-[#667085] block font-sans">Tick Size</span>
+              <span className="text-[#667085]">
                 {formatINR(selectedInstrument.tickSizePaise)}
               </span>
             </div>
@@ -75,7 +75,7 @@ export function TradingPage() {
         )}
       </div>
 
-      {/* Main Trading Area: Order Book (Left/Center) + Order Ticket (Right) */}
+      {/* Main Trading Area: Order Book (Left) + Order Ticket (Right) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         {/* Order Book Depth (7 cols) */}
         <div className="lg:col-span-7 flex flex-col">
@@ -95,8 +95,8 @@ export function TradingPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* Recent Orders for Selected Instrument */}
         <div className="space-y-2">
-          <h3 className="font-semibold text-slate-200 text-xs flex items-center gap-2">
-            <Clock className="w-3.5 h-3.5 text-sky-400" />
+          <h3 className="font-semibold text-[#172B4D] text-xs flex items-center gap-2">
+            <Clock className="w-3.5 h-3.5 text-[#087F5B]" />
             Your Recent Orders ({selectedSymbol})
           </h3>
           <OrdersTable orders={instrumentOrders} onOrderUpdated={loadInstrumentData} />
@@ -104,13 +104,13 @@ export function TradingPage() {
 
         {/* Recent Executions for Selected Instrument */}
         <div className="space-y-2">
-          <h3 className="font-semibold text-slate-200 text-xs flex items-center gap-2">
-            <Activity className="w-3.5 h-3.5 text-emerald-400" />
+          <h3 className="font-semibold text-[#172B4D] text-xs flex items-center gap-2">
+            <Activity className="w-3.5 h-3.5 text-[#087F5B]" />
             Recent Executions ({selectedSymbol})
           </h3>
-          <div className="overflow-x-auto rounded-xl border border-slate-800 bg-[#111622] shadow-sm">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-slate-900/90 text-slate-400 uppercase text-[10px] font-mono tracking-wider border-b border-slate-800">
+          <div className="overflow-x-auto rounded-xl border border-[#E2E8F0] bg-white shadow-2xs">
+            <table className="w-full text-left text-xs min-w-[500px]">
+              <thead className="bg-[#F8FAFC] text-[#667085] uppercase text-[10px] font-mono tracking-wider border-b border-[#E2E8F0]">
                 <tr>
                   <th className="py-2.5 px-3">Exec ID</th>
                   <th className="py-2.5 px-3">Side</th>
@@ -120,36 +120,36 @@ export function TradingPage() {
                   <th className="py-2.5 px-3">Time</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60 font-mono text-[11px]">
+              <tbody className="divide-y divide-[#E2E8F0] font-mono text-[11px]">
                 {instrumentExecutions.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="py-8 text-center text-slate-500 italic">
+                    <td colSpan={6} className="py-8 text-center text-[#94A3B8] italic font-sans">
                       No executions recorded yet for {selectedSymbol}.
                     </td>
                   </tr>
                 ) : (
                   instrumentExecutions.map((exec) => (
-                    <tr key={exec.executionId || exec._id} className="hover:bg-slate-850/40">
-                      <td className="py-2 px-3 text-slate-400 text-[10px]">
+                    <tr key={exec.executionId || exec._id} className="hover:bg-[#F8FAFC]">
+                      <td className="py-2 px-3 text-[#667085] text-[10px]">
                         {exec.executionId}
                       </td>
                       <td className="py-2 px-3 font-semibold">
                         <span
-                          className={exec.userSide === 'BUY' ? 'text-emerald-400' : 'text-rose-400'}
+                          className={exec.userSide === 'BUY' ? 'text-[#087F5B]' : 'text-[#D64545]'}
                         >
                           {exec.userSide}
                         </span>
                       </td>
-                      <td className="py-2 px-3 font-medium text-slate-200">
+                      <td className="py-2 px-3 font-medium text-[#172B4D]">
                         {formatINR(exec.priceInPaise)}
                       </td>
-                      <td className="py-2 px-3 text-slate-300">
+                      <td className="py-2 px-3 text-[#172B4D]">
                         {formatQuantity(exec.quantity)}
                       </td>
-                      <td className="py-2 px-3 text-emerald-400">
+                      <td className="py-2 px-3 text-[#087F5B] font-semibold">
                         {formatINR(exec.notionalPaise)}
                       </td>
-                      <td className="py-2 px-3 text-slate-400 text-[10px]">
+                      <td className="py-2 px-3 text-[#667085] text-[10px]">
                         {formatDateTime(exec.timestamp)}
                       </td>
                     </tr>

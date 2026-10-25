@@ -1,8 +1,9 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext.jsx';
 import { TradingProvider } from './context/TradingContext.jsx';
-import { Navbar } from './components/Navbar.jsx';
+import { Sidebar } from './components/Sidebar.jsx';
+import { Header } from './components/Header.jsx';
 import { SimulatedBanner } from './components/SimulatedBanner.jsx';
 import { DashboardPage } from './pages/DashboardPage.jsx';
 import { TradingPage } from './pages/TradingPage.jsx';
@@ -18,8 +19,8 @@ function ProtectedRoute({ children }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#090c15] text-slate-400">
-        <span className="w-6 h-6 border-2 border-sky-400 border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen flex items-center justify-center bg-[#F5F7FA] text-[#087F5B]">
+        <span className="w-8 h-8 border-2 border-[#087F5B] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -31,80 +32,153 @@ function ProtectedRoute({ children }) {
   return children;
 }
 
+function AppShell({ children }) {
+  const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  return (
+    <div className="min-h-screen flex bg-[#F5F7FA] text-[#172B4D] antialiased selection:bg-[#E6F4EF] selection:text-[#087F5B]">
+      {/* Sidebar (Desktop sticky + Mobile drawer) */}
+      <Sidebar
+        collapsed={collapsed}
+        onToggleCollapse={() => setCollapsed(!collapsed)}
+        mobileOpen={mobileOpen}
+        onCloseMobile={() => setMobileOpen(false)}
+      />
+
+      {/* Main Content Viewport */}
+      <div className="flex-1 flex flex-col min-w-0 min-h-screen">
+        <Header onOpenMobile={() => setMobileOpen(true)} />
+        <SimulatedBanner />
+
+        <main className="flex-1 max-w-7xl w-full mx-auto px-3.5 sm:px-6 lg:px-8 py-5">
+          {children}
+        </main>
+
+        <footer className="border-t border-[#E2E8F0] bg-white py-3.5 px-4 text-center text-xs text-[#667085] font-mono">
+          TradeFlow Simulated Order Execution & Matching Platform • Deterministic Price-Time Priority FIFO Engine
+        </footer>
+      </div>
+    </div>
+  );
+}
+
+function PublicShell({ children }) {
+  return (
+    <div className="min-h-screen flex flex-col bg-[#F5F7FA] text-[#172B4D] antialiased">
+      <SimulatedBanner />
+      <header className="h-14 bg-white border-b border-[#E2E8F0] px-4 sm:px-6 flex items-center justify-between">
+        <Link to="/" className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-[#087F5B] flex items-center justify-center text-white font-bold text-xs shadow-2xs">
+            TF
+          </div>
+          <span className="font-bold text-[#172B4D] text-sm tracking-tight flex items-center gap-1.5">
+            TradeFlow
+            <span className="text-[10px] bg-[#E6F4EF] text-[#087F5B] px-1.5 py-0.5 rounded font-mono font-medium border border-[#A7F3D0]">
+              TERMINAL
+            </span>
+          </span>
+        </Link>
+      </header>
+      <main className="flex-1 flex items-center justify-center p-4">
+        {children}
+      </main>
+      <footer className="border-t border-[#E2E8F0] bg-white py-3.5 px-4 text-center text-xs text-[#667085] font-mono">
+        TradeFlow Simulated Order Execution & Matching Platform • Integer Paise Precision
+      </footer>
+    </div>
+  );
+}
+
 export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <TradingProvider>
-          <div className="min-h-screen flex flex-col bg-[#090c15] text-slate-100 antialiased selection:bg-sky-500/20 selection:text-sky-300">
-            <SimulatedBanner />
-            <Navbar />
+          <Routes>
+            {/* Public Authentication Routes */}
+            <Route
+              path="/login"
+              element={
+                <PublicShell>
+                  <LoginPage />
+                </PublicShell>
+              }
+            />
+            <Route
+              path="/register"
+              element={
+                <PublicShell>
+                  <RegisterPage />
+                </PublicShell>
+              }
+            />
 
-            <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-              <Routes>
-                {/* Public Authentication Routes */}
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/register" element={<RegisterPage />} />
+            {/* Authenticated Trading Terminal Routes */}
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <AppShell>
+                    <DashboardPage />
+                  </AppShell>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/terminal"
+              element={
+                <ProtectedRoute>
+                  <AppShell>
+                    <TradingPage />
+                  </AppShell>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/orderbook"
+              element={
+                <ProtectedRoute>
+                  <AppShell>
+                    <OrderBookPage />
+                  </AppShell>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/orders"
+              element={
+                <ProtectedRoute>
+                  <AppShell>
+                    <OrdersPage />
+                  </AppShell>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/portfolio"
+              element={
+                <ProtectedRoute>
+                  <AppShell>
+                    <PortfolioPage />
+                  </AppShell>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/activity"
+              element={
+                <ProtectedRoute>
+                  <AppShell>
+                    <ActivityPage />
+                  </AppShell>
+                </ProtectedRoute>
+              }
+            />
 
-                {/* Authenticated Trading Terminal Routes */}
-                <Route
-                  path="/"
-                  element={
-                    <ProtectedRoute>
-                      <DashboardPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/terminal"
-                  element={
-                    <ProtectedRoute>
-                      <TradingPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/orderbook"
-                  element={
-                    <ProtectedRoute>
-                      <OrderBookPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/orders"
-                  element={
-                    <ProtectedRoute>
-                      <OrdersPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/portfolio"
-                  element={
-                    <ProtectedRoute>
-                      <PortfolioPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/activity"
-                  element={
-                    <ProtectedRoute>
-                      <ActivityPage />
-                    </ProtectedRoute>
-                  }
-                />
-
-                {/* Fallback */}
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-            </main>
-
-            <footer className="border-t border-slate-800/80 bg-[#0c101a] py-4 text-center text-xs text-slate-500 font-mono">
-              TradeFlow Simulated Order Execution & Matching Platform • Deterministic Price-Time Priority FIFO Engine
-            </footer>
-          </div>
+            {/* Fallback */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
         </TradingProvider>
       </AuthProvider>
     </BrowserRouter>

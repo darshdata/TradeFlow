@@ -56,9 +56,9 @@ export function OrdersTable({ orders = [], onOrderUpdated }) {
   return (
     <div className="space-y-3">
       {/* Table container */}
-      <div className="overflow-x-auto rounded-xl border border-slate-800 bg-[#111622] shadow-sm">
-        <table className="w-full text-left text-xs">
-          <thead className="bg-slate-900/90 text-slate-400 uppercase text-[10px] font-mono tracking-wider border-b border-slate-800">
+      <div className="overflow-x-auto rounded-xl border border-[#E2E8F0] bg-white shadow-2xs">
+        <table className="w-full text-left text-xs min-w-[700px]">
+          <thead className="bg-[#F8FAFC] text-[#667085] uppercase text-[10px] font-mono tracking-wider border-b border-[#E2E8F0]">
             <tr>
               <th className="py-3 px-3.5">Order Ref</th>
               <th className="py-3 px-3">Instrument</th>
@@ -72,10 +72,10 @@ export function OrdersTable({ orders = [], onOrderUpdated }) {
               <th className="py-3 px-3.5 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-800/60 font-mono text-[11px]">
+          <tbody className="divide-y divide-[#E2E8F0] font-mono text-[11px]">
             {orders.length === 0 ? (
               <tr>
-                <td colSpan={10} className="py-12 text-center text-slate-500 italic">
+                <td colSpan={10} className="py-12 text-center text-[#94A3B8] italic font-sans">
                   No orders found.
                 </td>
               </tr>
@@ -83,36 +83,36 @@ export function OrdersTable({ orders = [], onOrderUpdated }) {
               orders.map((order) => (
                 <tr
                   key={order._id || order.orderId}
-                  className="hover:bg-slate-850/40 transition-colors"
+                  className="hover:bg-[#F8FAFC] transition-colors"
                 >
-                  <td className="py-2.5 px-3.5 font-medium text-slate-300">
+                  <td className="py-2.5 px-3.5 font-medium text-[#172B4D]">
                     {order.orderId}
                   </td>
-                  <td className="py-2.5 px-3 font-bold text-slate-100 font-sans">
+                  <td className="py-2.5 px-3 font-bold text-[#172B4D] font-sans">
                     {order.instrument}
                   </td>
                   <td className="py-2.5 px-3">
                     <span
                       className={`font-semibold ${
-                        order.side === 'BUY' ? 'text-emerald-400' : 'text-rose-400'
+                        order.side === 'BUY' ? 'text-[#087F5B]' : 'text-[#D64545]'
                       }`}
                     >
                       {order.side}
                     </span>
                   </td>
-                  <td className="py-2.5 px-3 text-slate-400 font-sans text-xs">
+                  <td className="py-2.5 px-3 text-[#667085]">
                     {order.orderType}
                   </td>
-                  <td className="py-2.5 px-3 text-slate-200">
-                    {order.orderType === 'LIMIT' ? formatINR(order.priceInPaise) : 'Market'}
+                  <td className="py-2.5 px-3 font-medium text-[#172B4D]">
+                    {order.orderType === 'LIMIT'
+                      ? formatINR(order.priceInPaise)
+                      : 'Market'}
                   </td>
-                  <td className="py-2.5 px-3 text-slate-300">
-                    <span className="font-semibold text-slate-100">
-                      {formatQuantity(order.filledQuantity)}
-                    </span>
-                    <span className="text-slate-500"> / {formatQuantity(order.quantity)}</span>
+                  <td className="py-2.5 px-3 text-[#172B4D]">
+                    <span className="font-semibold">{formatQuantity(order.filledQuantity)}</span>
+                    <span className="text-[#94A3B8]"> / {formatQuantity(order.quantity)}</span>
                   </td>
-                  <td className="py-2.5 px-3 text-slate-300">
+                  <td className="py-2.5 px-3 text-[#667085]">
                     {order.averageExecutionPriceInPaise > 0
                       ? formatINR(order.averageExecutionPriceInPaise)
                       : '-'}
@@ -120,26 +120,29 @@ export function OrdersTable({ orders = [], onOrderUpdated }) {
                   <td className="py-2.5 px-3">
                     <StatusBadge status={order.status} />
                   </td>
-                  <td className="py-2.5 px-3 text-slate-400 text-[10px]">
+                  <td className="py-2.5 px-3 text-[#667085] text-[10px]">
                     {formatDateTime(order.createdAt)}
                   </td>
-                  <td className="py-2.5 px-3.5 text-right space-x-1.5 font-sans">
-                    <button
-                      onClick={() => handleOpenDetail(order._id || order.id)}
-                      className="p-1 rounded hover:bg-slate-800 text-slate-400 hover:text-sky-400 transition-colors"
-                      title="Inspect events & executions"
-                    >
-                      <Eye className="w-3.5 h-3.5" />
-                    </button>
-                    {isCancellable(order.status) && (
+                  <td className="py-2.5 px-3.5 text-right">
+                    <div className="flex items-center justify-end gap-1.5">
                       <button
-                        onClick={() => handlePromptCancel(order)}
-                        className="p-1 rounded hover:bg-rose-950/40 text-slate-400 hover:text-rose-400 transition-colors"
-                        title="Cancel remaining order"
+                        onClick={() => handleOpenDetail(order._id || order.orderId)}
+                        className="p-1.5 rounded-md text-[#667085] hover:text-[#172B4D] hover:bg-[#F1F5F9] transition-colors"
+                        title="View order audit trail"
                       >
-                        <Ban className="w-3.5 h-3.5" />
+                        <Eye className="w-3.5 h-3.5" />
                       </button>
-                    )}
+
+                      {isCancellable(order.status) && (
+                        <button
+                          onClick={() => handlePromptCancel(order)}
+                          className="p-1.5 rounded-md text-[#D64545] hover:bg-[#FEE2E2] transition-colors"
+                          title="Cancel resting order"
+                        >
+                          <Ban className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))
@@ -148,58 +151,33 @@ export function OrdersTable({ orders = [], onOrderUpdated }) {
         </table>
       </div>
 
-      {/* Cancellation Modal */}
+      {/* Confirmation Modal for Order Cancellation */}
       <ConfirmModal
         isOpen={!!orderToCancel}
-        title="Cancel Order Confirmation"
+        title="Cancel Resting Order"
+        message={`Are you sure you want to cancel ${orderToCancel?.side} order ${orderToCancel?.orderId} for ${orderToCancel?.remainingQuantity} shares of ${orderToCancel?.instrument}? Any remaining reserved cash or shares will be immediately released.`}
         confirmText="Cancel Order"
         isDestructive={true}
         isLoading={isCancelling}
         onConfirm={handleConfirmCancel}
-        onCancel={() => {
-          setOrderToCancel(null);
-          setCancelError(null);
-        }}
+        onCancel={() => setOrderToCancel(null)}
       >
-        <div className="space-y-2">
-          <p className="text-slate-300">
-            Are you sure you want to cancel open order{' '}
-            <strong className="text-slate-100 font-mono">{orderToCancel?.orderId}</strong>?
-          </p>
-          <div className="bg-slate-900/80 p-2.5 rounded-lg border border-slate-800 font-mono text-[11px] space-y-1">
-            <div className="flex justify-between">
-              <span className="text-slate-400">Instrument:</span>
-              <span className="text-slate-200">{orderToCancel?.instrument}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-400">Remaining Quantity:</span>
-              <span className="text-slate-200">
-                {formatQuantity(orderToCancel?.remainingQuantity || 0)} shares
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-400">Reservation to release:</span>
-              <span className="text-emerald-400 font-medium">
-                {orderToCancel?.side === 'BUY'
-                  ? formatINR(orderToCancel?.priceInPaise * orderToCancel?.remainingQuantity)
-                  : `${orderToCancel?.remainingQuantity} shares`}
-              </span>
-            </div>
+        {cancelError && (
+          <div className="p-2.5 rounded-lg bg-[#FEF2F2] border border-[#FECACA] text-[#991B1B] text-xs flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            <span>{cancelError}</span>
           </div>
-          {cancelError && (
-            <div className="p-2 rounded bg-rose-950/40 border border-rose-900/60 text-rose-300 text-[11px] flex items-center gap-2">
-              <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-              <span>{cancelError}</span>
-            </div>
-          )}
-        </div>
+        )}
       </ConfirmModal>
 
-      {/* Audit Detail Modal */}
+      {/* Detailed Order Timeline Modal */}
       <OrderDetailModal
-        isOpen={detailModalOpen}
         orderId={selectedOrderId}
-        onClose={() => setDetailModalOpen(false)}
+        isOpen={detailModalOpen}
+        onClose={() => {
+          setDetailModalOpen(false);
+          setSelectedOrderId(null);
+        }}
       />
     </div>
   );

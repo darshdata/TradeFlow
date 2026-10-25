@@ -10,6 +10,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "seed": "node src/jobs/seed.js",
+    "verify:db": "node src/jobs/verifyMongoIntegration.js",
     "lint": "node -e \"console.log('No lint errors')\""
   },
   "dependencies": {

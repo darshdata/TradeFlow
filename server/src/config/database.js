@@ -16,7 +16,7 @@ export async function connectDatabase() {
     });
     uri = memoryReplSet.getUri();
     isReplicaSet = true;
-    logger.info(`Started in-memory MongoDB replica set at ${uri}`);
+    logger.info('Started in-memory MongoDB replica set with WiredTiger transactions enabled');
   }
 
   mongoose.set('strictQuery', true);

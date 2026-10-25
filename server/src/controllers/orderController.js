@@ -4,6 +4,8 @@ export class OrderController {
   static async createOrder(req, res, next) {
     try {
       const idempotencyKey = req.headers['idempotency-key'] || req.body.idempotencyKey || null;
+      const enforceExchangeHours =
+        req.headers['x-enforce-exchange-hours'] === 'true' || req.body.enforceExchangeHours === true;
 
       const result = await OrderService.submitOrder({
         userId: req.user.id,
@@ -13,6 +15,7 @@ export class OrderController {
         priceInPaise: req.body.priceInPaise,
         quantity: req.body.quantity,
         idempotencyKey,
+        enforceExchangeHours,
       });
 
       res.status(201).json({

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { api } from '../api/client.js';
+import { getClientMarketStatus } from '../utils/marketHours.js';
 
 const TradingContext = createContext(null);
 
@@ -10,6 +11,32 @@ export function TradingProvider({ children }) {
   const [loadingInstruments, setLoadingInstruments] = useState(true);
   const [loadingOrderBook, setLoadingOrderBook] = useState(false);
   const [refreshCounter, setRefreshCounter] = useState(0);
+
+  // Market Hours & 24/7 Extended Simulation (Interview Mode) State
+  const [isExtendedSimulation, setIsExtendedSimulationState] = useState(() => {
+    const saved = localStorage.getItem('tradeflow_extended_simulation');
+    return saved !== 'false'; // Defaults to true (24/7 matching enabled for interview demos)
+  });
+
+  const [marketStatus, setMarketStatus] = useState(() => getClientMarketStatus());
+  const [marketModalOpen, setMarketModalOpen] = useState(false);
+
+  const setExtendedSimulation = (val) => {
+    setIsExtendedSimulationState(val);
+    localStorage.setItem('tradeflow_extended_simulation', val ? 'true' : 'false');
+  };
+
+  const toggleExtendedSimulation = () => {
+    setExtendedSimulation(!isExtendedSimulation);
+  };
+
+  // Clock tick every 5 seconds to update IST market status
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setMarketStatus(getClientMarketStatus());
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
 
   const refreshAll = useCallback(() => {
     setRefreshCounter((prev) => prev + 1);
@@ -82,6 +109,13 @@ export function TradingProvider({ children }) {
         loadingInstruments,
         loadingOrderBook,
         refreshAll,
+        isExtendedSimulation,
+        setExtendedSimulation,
+        toggleExtendedSimulation,
+        marketStatus,
+        canTrade: isExtendedSimulation || !!marketStatus?.isRegularOpen,
+        marketModalOpen,
+        setMarketModalOpen,
       }}
     >
       {children}

@@ -33,6 +33,7 @@ import {
 } from '../utils/errors.js';
 import { withTransaction } from '../config/database.js';
 import { logger } from '../utils/logger.js';
+import { getMarketHoursStatus } from '../utils/marketHours.js';
 
 export class OrderService {
   /**
@@ -47,8 +48,19 @@ export class OrderService {
     priceInPaise = 0,
     quantity,
     idempotencyKey = null,
+    enforceExchangeHours = false,
   }) {
     const symbol = symbolInput.toUpperCase();
+
+    // 0. Market Hours Validation (when enforceExchangeHours is explicitly requested)
+    if (enforceExchangeHours) {
+      const { isRegularOpen, regularHours } = getMarketHoursStatus();
+      if (!isRegularOpen) {
+        throw new ValidationError(
+          `Order rejected: Regular equity exchange is closed (${regularHours}). Enable Extended Simulation Mode to place and match orders outside regular hours.`
+        );
+      }
+    }
 
     // 1. Idempotency Check
     let fingerprint = null;

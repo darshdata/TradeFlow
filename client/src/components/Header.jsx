@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
+import { useTrading } from '../context/TradingContext.jsx';
 import { formatINR } from '../utils/formatters.js';
+import { MarketStatusPill } from './MarketStatusPill.jsx';
+import { MarketStatusModal } from './MarketStatusModal.jsx';
 import {
   Menu,
   Wallet,
@@ -25,33 +28,32 @@ const ROUTE_TITLES = {
 
 export function Header({ onOpenMobile }) {
   const { user, account, logout } = useAuth();
+  const { marketModalOpen, setMarketModalOpen } = useTrading();
   const location = useLocation();
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const currentTitle = ROUTE_TITLES[location.pathname] || 'Order Execution';
 
   return (
-    <header className="h-14 bg-white border-b border-[#E2E8F0] sticky top-0 z-20 px-2.5 sm:px-6 flex items-center justify-between w-full max-w-full overflow-hidden">
-      {/* Left: Mobile Toggle & Page Context */}
-      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-        <button
-          onClick={onOpenMobile}
-          className="lg:hidden p-1.5 -ml-1 rounded-md text-[#667085] hover:text-[#172B4D] hover:bg-[#F1F5F9] transition-colors shrink-0"
-          aria-label="Open navigation menu"
-        >
-          <Menu className="w-5 h-5" />
-        </button>
+    <>
+      <header className="h-14 bg-white border-b border-[#E2E8F0] sticky top-0 z-20 px-2.5 sm:px-6 flex items-center justify-between w-full max-w-full overflow-hidden">
+        {/* Left: Mobile Toggle & Page Context */}
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+          <button
+            onClick={onOpenMobile}
+            className="lg:hidden p-1.5 -ml-1 rounded-md text-[#667085] hover:text-[#172B4D] hover:bg-[#F1F5F9] transition-colors shrink-0"
+            aria-label="Open navigation menu"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
 
-        <div className="flex items-center gap-2 min-w-0">
-          <h1 className="text-xs sm:text-sm font-semibold text-[#172B4D] truncate max-w-[85px] min-[360px]:max-w-[120px] sm:max-w-none">
-            {currentTitle}
-          </h1>
-          <span className="hidden md:inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#E6F4EF] text-[#087F5B] border border-[#A7F3D0] shrink-0">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#087F5B] animate-pulse" />
-            FIFO Engine Active
-          </span>
+          <div className="flex items-center gap-2 min-w-0">
+            <h1 className="text-xs sm:text-sm font-semibold text-[#172B4D] truncate max-w-[85px] min-[360px]:max-w-[120px] sm:max-w-none">
+              {currentTitle}
+            </h1>
+            <MarketStatusPill className="shrink-0" />
+          </div>
         </div>
-      </div>
 
       {/* Right: Cash Balances & User Profile Menu */}
       <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
@@ -158,11 +160,17 @@ export function Header({ onOpenMobile }) {
               to="/register"
               className="px-3.5 py-1.5 rounded-lg bg-[#087F5B] hover:bg-[#066649] text-white font-medium transition-colors shadow-2xs"
             >
-              Get Started
+              Create Account
             </Link>
           </div>
         )}
       </div>
     </header>
+
+    <MarketStatusModal
+      isOpen={marketModalOpen}
+      onClose={() => setMarketModalOpen(false)}
+    />
+  </>
   );
 }

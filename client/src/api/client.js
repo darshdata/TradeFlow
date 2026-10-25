@@ -59,12 +59,19 @@ export const api = {
     getBySymbol: (symbol) => request(`/instruments/${symbol}`),
   },
 
+  market: {
+    getStatus: () => request('/market/status'),
+  },
+
   orders: {
-    create: (body, idempotencyKey) =>
+    create: (body, idempotencyKey, enforceExchangeHours = false) =>
       request('/orders', {
         method: 'POST',
-        body,
-        headers: idempotencyKey ? { 'Idempotency-Key': idempotencyKey } : {},
+        body: { ...body, enforceExchangeHours },
+        headers: {
+          ...(idempotencyKey ? { 'Idempotency-Key': idempotencyKey } : {}),
+          ...(enforceExchangeHours ? { 'X-Enforce-Exchange-Hours': 'true' } : {}),
+        },
       }),
     getAll: (params = {}) => {
       const query = new URLSearchParams(params).toString();

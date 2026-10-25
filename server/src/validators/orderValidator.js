@@ -20,6 +20,7 @@ export const createOrderSchema = z
       .int('Quantity must be an integer')
       .positive('Quantity must be greater than 0'),
     idempotencyKey: z.string().trim().min(8).max(128).optional().nullable(),
+    enforceExchangeHours: z.boolean().optional().default(false),
   })
   .refine(
     (data) => {

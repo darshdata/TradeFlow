@@ -18,10 +18,22 @@ import {
   Wallet,
   Briefcase,
   Layers,
+  Zap,
+  Clock,
 } from 'lucide-react';
 
 export function OrderTicket({ prefilledPrice, onOrderSubmitted }) {
-  const { selectedSymbol, selectedInstrument, orderBook, refreshAll } = useTrading();
+  const {
+    selectedSymbol,
+    selectedInstrument,
+    orderBook,
+    refreshAll,
+    isExtendedSimulation,
+    setExtendedSimulation,
+    marketStatus,
+    canTrade,
+    setMarketModalOpen,
+  } = useTrading();
   const { account, refreshAccount } = useAuth();
 
   const [side, setSide] = useState('BUY'); // 'BUY' | 'SELL'
@@ -106,6 +118,13 @@ export function OrderTicket({ prefilledPrice, onOrderSubmitted }) {
     setErrorMessage(null);
     setSuccessResult(null);
 
+    if (!canTrade) {
+      setErrorMessage(
+        'Regular equity exchange is currently closed (09:15 – 15:30 IST). Enable 24/7 Extended Simulation Mode below to execute orders immediately.'
+      );
+      return;
+    }
+
     if (!isFormValid) {
       if (hasInsufficientCash) {
         setErrorMessage('Insufficient available cash to reserve the required amount for this order.');
@@ -139,7 +158,7 @@ export function OrderTicket({ prefilledPrice, onOrderSubmitted }) {
         quantity: numQty,
       };
 
-      const res = await api.orders.create(payload, idempotencyKey);
+      const res = await api.orders.create(payload, idempotencyKey, !isExtendedSimulation);
       setShowConfirm(false);
       setSuccessResult(res);
       refreshAccount();
@@ -382,14 +401,48 @@ export function OrderTicket({ prefilledPrice, onOrderSubmitted }) {
               )}
             </div>
           )}
+          {/* Market Status & Interview Mode Indicator */}
+          {!canTrade ? (
+            <div className="p-3 bg-[#FEF3C7] border border-[#FDE68A] rounded-xl text-[#B45309] text-xs space-y-2 animate-in fade-in">
+              <div className="flex items-center gap-1.5 font-semibold">
+                <Clock className="w-4 h-4 shrink-0 text-[#B45309]" />
+                <span>Exchange is Closed ({marketStatus?.regularHours})</span>
+              </div>
+              <p className="text-[11px] leading-relaxed text-[#92400E]">
+                Enforcing strict exchange hours. Enable 24/7 Extended Simulation to place and match orders immediately during your interview.
+              </p>
+              <button
+                type="button"
+                onClick={() => setExtendedSimulation(true)}
+                className="w-full py-1.5 px-3 bg-[#B45309] hover:bg-[#92400E] text-white rounded-lg text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 shadow-2xs"
+              >
+                <Zap className="w-3.5 h-3.5" />
+                Enable 24/7 Extended Mode to Trade
+              </button>
+            </div>
+          ) : isExtendedSimulation ? (
+            <div className="flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-[#E6F4EF] border border-[#A7F3D0] text-[#087F5B] text-[11px]">
+              <span className="flex items-center gap-1.5 font-medium">
+                <Zap className="w-3.5 h-3.5" />
+                24/7 Extended Simulation (Interview Mode Active)
+              </span>
+              <button
+                type="button"
+                onClick={() => setMarketModalOpen(true)}
+                className="text-[10px] underline hover:text-[#066649] font-mono"
+              >
+                Schedule
+              </button>
+            </div>
+          ) : null}
         </div>
 
         {/* Action Button */}
         <button
           type="submit"
-          disabled={!isFormValid || isSubmitting}
+          disabled={!isFormValid || isSubmitting || !canTrade}
           className={`w-full py-2.5 px-4 rounded-xl font-bold text-xs transition-all shadow-2xs flex items-center justify-center gap-2 ${
-            !isFormValid || isSubmitting
+            !isFormValid || isSubmitting || !canTrade
               ? 'bg-[#E2E8F0] text-[#94A3B8] cursor-not-allowed'
               : side === 'BUY'
               ? 'bg-[#087F5B] hover:bg-[#066649] text-white'
@@ -402,6 +455,8 @@ export function OrderTicket({ prefilledPrice, onOrderSubmitted }) {
           <span>
             {isSubmitting
               ? 'Submitting order…'
+              : !canTrade
+              ? 'Exchange Closed (Strict Mode)'
               : side === 'BUY'
               ? 'Place Buy Order'
               : 'Place Sell Order'}

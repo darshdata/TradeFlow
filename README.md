@@ -4,7 +4,7 @@
 [![Vite](https://img.shields.io/badge/Vite-v8.3.5-purple.svg)](https://vitejs.dev/)
 [![React](https://img.shields.io/badge/React-v19.3.1-blue.svg)](https://react.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-v4.0-38bdf8.svg)](https://tailwindcss.com/)
-[![Tests](https://img.shields.io/badge/Vitest-46%20Passed-brightgreen.svg)](https://vitest.dev/)
+[![Tests](https://img.shields.io/badge/Vitest-48%20Passed-brightgreen.svg)](https://vitest.dev/)
 
 TradeFlow is a simulated stock-order management, execution, and matching platform built from the ground up for software engineers preparing for fintech engineering interviews (Paytm Money, Zerodha, Groww).
 
@@ -153,7 +153,7 @@ Open your browser to **http://localhost:5174**.
 # Run all Vitest suites (matching engine, reservations, idempotency, REST API)
 npm test
 ```
-**Test Results**: 4 test files, 46 tests passing with 0 failures.
+**Test Results**: 4 test files, 48 tests passing with 0 failures.
 
 ### Production Build & Linting
 ```bash

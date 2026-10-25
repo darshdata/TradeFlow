@@ -5,6 +5,7 @@ import orderRoutes from './orderRoutes.js';
 import orderBookRoutes from './orderBookRoutes.js';
 import executionRoutes from './executionRoutes.js';
 import portfolioRoutes from './portfolioRoutes.js';
+import marketRoutes from './marketRoutes.js';
 import { PortfolioController } from '../controllers/portfolioController.js';
 import { authenticate } from '../middleware/auth.js';
 
@@ -16,6 +17,7 @@ router.use('/orders', orderRoutes);
 router.use('/orderbook', orderBookRoutes);
 router.use('/executions', executionRoutes);
 router.use('/portfolio', portfolioRoutes);
+router.use('/market', marketRoutes);
 
 // Direct shortcuts as specified in specs
 router.get('/positions', authenticate, PortfolioController.getPositions);

@@ -171,4 +171,37 @@ describe('TradeFlow Full REST API Integration Tests', () => {
     expect(res.body.data.metrics).toBeDefined();
     expect(res.body.data.audit.isReconciled).toBe(true);
   });
+
+  it('GET /api/v1/market/status returns real-time market schedule', async () => {
+    const res = await request(app).get('/api/v1/market/status');
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.session).toBeDefined();
+    expect(res.body.data.istTime).toBeDefined();
+    expect(res.body.data.regularHours).toBe('09:15 - 15:30 IST (Mon–Fri)');
+  });
+
+  it('POST /api/v1/orders with enforceExchangeHours=true validates market schedule when closed', async () => {
+    const statusRes = await request(app).get('/api/v1/market/status');
+    const { isRegularOpen } = statusRes.body.data;
+
+    const res = await request(app)
+      .post('/api/v1/orders')
+      .set('Authorization', `Bearer ${tokenA}`)
+      .send({
+        instrument: 'RELIANCE',
+        side: 'BUY',
+        orderType: 'LIMIT',
+        priceInPaise: 245000,
+        quantity: 5,
+        enforceExchangeHours: true,
+      });
+
+    if (!isRegularOpen) {
+      expect(res.status).toBe(400);
+      expect(res.body.message).toContain('Regular equity exchange is closed');
+    } else {
+      expect(res.status).toBe(201);
+    }
+  });
 });

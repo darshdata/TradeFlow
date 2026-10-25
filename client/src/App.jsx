@@ -37,8 +37,8 @@ function AppShell({ children }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <div className="min-h-screen flex bg-[#F5F7FA] text-[#172B4D] antialiased selection:bg-[#E6F4EF] selection:text-[#087F5B] w-full max-w-full overflow-x-hidden">
-      {/* Sidebar (Desktop sticky + Mobile drawer) */}
+    <div className="min-h-screen bg-[#F5F7FA] text-[#172B4D] antialiased selection:bg-[#E6F4EF] selection:text-[#087F5B] w-full max-w-full">
+      {/* Sidebar (Desktop fixed full-height + Mobile drawer) */}
       <Sidebar
         collapsed={collapsed}
         onToggleCollapse={() => setCollapsed(!collapsed)}
@@ -46,12 +46,16 @@ function AppShell({ children }) {
         onCloseMobile={() => setMobileOpen(false)}
       />
 
-      {/* Main Content Viewport */}
-      <div className="flex-1 flex flex-col min-w-0 max-w-full min-h-screen overflow-x-hidden">
+      {/* Main Content Viewport with offset for fixed sidebar */}
+      <div
+        className={`flex-1 flex flex-col min-w-0 max-w-full min-h-screen transition-all duration-200 ${
+          collapsed ? 'lg:pl-18' : 'lg:pl-60'
+        }`}
+      >
         <Header onOpenMobile={() => setMobileOpen(true)} />
         <SimulatedBanner />
 
-        <main className="flex-1 w-full max-w-7xl mx-auto px-2.5 sm:px-6 lg:px-8 py-3.5 sm:py-5 min-w-0 overflow-x-hidden">
+        <main className="flex-1 w-full max-w-7xl mx-auto px-2.5 sm:px-6 lg:px-8 py-3.5 sm:py-5 min-w-0">
           {children}
         </main>
 

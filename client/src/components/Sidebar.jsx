@@ -122,14 +122,14 @@ export function Sidebar({
         </div>
       )}
 
-      {/* Desktop Sticky Sidebar */}
+      {/* Desktop Fixed Full-Height Sidebar */}
       <aside
-        className={`hidden lg:flex flex-col bg-white border-r border-[#E2E8F0] transition-all duration-200 shrink-0 sticky top-0 h-screen z-30 ${
+        className={`hidden lg:flex flex-col bg-white border-r border-[#E2E8F0] transition-all duration-200 shrink-0 fixed inset-y-0 left-0 h-screen z-30 ${
           collapsed ? 'w-18' : 'w-60'
         }`}
       >
         {/* Brand Header */}
-        <div className="h-14 px-4 flex items-center justify-between border-b border-[#E2E8F0]">
+        <div className="h-14 px-4 flex items-center justify-between border-b border-[#E2E8F0] shrink-0">
           <Link
             to="/"
             className={`flex items-center gap-2.5 ${
@@ -144,7 +144,7 @@ export function Sidebar({
                 <span className="font-bold text-[#172B4D] text-sm tracking-tight flex items-center gap-1.5">
                   TradeFlow
                   <span className="text-[9px] bg-[#E6F4EF] text-[#087F5B] px-1.5 py-0.2 rounded font-mono font-semibold border border-[#A7F3D0]">
-                    TERMINAL
+                    SIMULATED
                   </span>
                 </span>
               </div>
@@ -156,7 +156,7 @@ export function Sidebar({
         {renderNavLinks(false)}
 
         {/* Desktop Collapse Toggle at Bottom */}
-        <div className="p-3 border-t border-[#E2E8F0] bg-white">
+        <div className="p-3 border-t border-[#E2E8F0] bg-white shrink-0">
           <button
             onClick={onToggleCollapse}
             className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-medium text-[#667085] hover:text-[#172B4D] hover:bg-[#F8FAFC] transition-colors ${

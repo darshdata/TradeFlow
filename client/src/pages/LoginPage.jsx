@@ -65,7 +65,7 @@ export function LoginPage() {
             Sign in to TradeFlow
           </h2>
           <p className="text-xs text-[#667085]">
-            Access your simulated trading terminal, order book, and cash ledger.
+            Sign in to access your simulated trading account, working orders, and positions.
           </p>
         </div>
 
@@ -77,7 +77,7 @@ export function LoginPage() {
           className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-[#E6F4EF] hover:bg-[#A7F3D0] border border-[#A7F3D0] text-[#087F5B] text-xs font-semibold transition-all shadow-2xs"
         >
           <Sparkles className="w-4 h-4 text-[#087F5B]" />
-          <span>Launch One-Click Demo Account (₹1,00,000 Cash)</span>
+          <span>Launch Simulated Trading Account (₹1,00,000 Cash)</span>
         </button>
 
         <div className="relative flex py-1 items-center">
@@ -139,7 +139,7 @@ export function LoginPage() {
               <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : (
               <>
-                <span>Sign In to Terminal</span>
+                <span>Sign In</span>
                 <ArrowRight className="w-4 h-4" />
               </>
             )}
@@ -149,7 +149,7 @@ export function LoginPage() {
         <div className="text-center text-xs text-[#667085] pt-2">
           Don't have an account?{' '}
           <Link to="/register" className="text-[#087F5B] hover:text-[#066649] font-medium">
-            Register for free
+            Create an account
           </Link>
         </div>
       </div>

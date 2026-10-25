@@ -23,13 +23,13 @@ export function OrderBookDepth({ onSelectPrice }) {
         <div className="flex items-center gap-2">
           <Layers className="w-4 h-4 text-[#087F5B]" />
           <h3 className="font-semibold text-[#172B4D] text-xs">
-            Live Order Book <span className="font-mono text-[#667085]">({selectedSymbol})</span>
+            Simulated Market Depth <span className="font-mono text-[#667085]">({selectedSymbol})</span>
           </h3>
         </div>
         <button
           onClick={refreshAll}
           className="text-[#667085] hover:text-[#172B4D] p-1 rounded hover:bg-[#F1F5F9] transition-colors"
-          title="Refresh depth"
+          title="Refresh market depth"
         >
           <RefreshCw className="w-3.5 h-3.5" />
         </button>
@@ -40,13 +40,13 @@ export function OrderBookDepth({ onSelectPrice }) {
         <div className="flex items-center gap-1.5">
           <span className="text-[10px] text-[#667085] uppercase tracking-wider font-sans font-medium">Spread:</span>
           <span className="font-semibold text-[#172B4D]">
-            {spreadInPaise !== null ? formatINR(spreadInPaise) : 'No Overlap'}
+            {bestBid && bestAsk ? formatINR(bestAsk.priceInPaise - bestBid.priceInPaise) : 'No two-sided market'}
           </span>
         </div>
         <div className="text-[11px] text-[#667085] flex items-center gap-2 font-sans">
-          <span>Bid: <strong className="text-[#087F5B] font-mono">{bestBid ? formatINR(bestBid.priceInPaise) : '-'}</strong></span>
+          <span>Best Bid: <strong className="text-[#087F5B] font-mono">{bestBid ? formatINR(bestBid.priceInPaise) : '-'}</strong></span>
           <span className="text-[#CBD5E1]">|</span>
-          <span>Ask: <strong className="text-[#D64545] font-mono">{bestAsk ? formatINR(bestAsk.priceInPaise) : '-'}</strong></span>
+          <span>Best Ask: <strong className="text-[#D64545] font-mono">{bestAsk ? formatINR(bestAsk.priceInPaise) : '-'}</strong></span>
         </div>
       </div>
 
@@ -57,7 +57,7 @@ export function OrderBookDepth({ onSelectPrice }) {
           <div className="bg-[#E6F4EF] px-3 py-1.5 border-b border-[#A7F3D0] flex items-center justify-between text-[11px] font-semibold text-[#087F5B]">
             <span className="flex items-center gap-1">
               <ArrowUp className="w-3 h-3" />
-              Bids (Buy)
+              Buy Side (Bids)
             </span>
             <span className="text-[10px] font-mono font-medium text-[#087F5B]">
               {orderBook?.totalBidQuantity || 0} Qty
@@ -65,15 +65,15 @@ export function OrderBookDepth({ onSelectPrice }) {
           </div>
 
           <div className="grid grid-cols-3 px-3 py-1 text-[10px] uppercase font-mono text-[#667085] border-b border-[#E2E8F0] bg-[#F8FAFC]">
-            <span>Price</span>
-            <span className="text-right">Qty</span>
-            <span className="text-right">Orders</span>
+            <span>Bid Price</span>
+            <span className="text-right">Bid Qty</span>
+            <span className="text-right">Working</span>
           </div>
 
           <div className="overflow-y-auto flex-1 divide-y divide-[#E2E8F0]">
             {bids.length === 0 ? (
               <div className="py-8 text-center text-[#94A3B8] text-xs italic">
-                No active buy orders
+                No active orders at this price level.
               </div>
             ) : (
               bids.map((level) => {
@@ -83,7 +83,7 @@ export function OrderBookDepth({ onSelectPrice }) {
                     key={level.priceInPaise}
                     onClick={() => onSelectPrice && onSelectPrice(paiseToRupees(level.priceInPaise))}
                     className="relative grid grid-cols-3 px-3 py-1.5 text-xs font-mono cursor-pointer hover:bg-[#F0FDF4] transition-colors"
-                    title="Click to fill limit price"
+                    title="Click price level to populate limit order ticket"
                   >
                     {/* Visual depth bar */}
                     <div
@@ -111,7 +111,7 @@ export function OrderBookDepth({ onSelectPrice }) {
           <div className="bg-[#FEF2F2] px-3 py-1.5 border-b border-[#FECACA] flex items-center justify-between text-[11px] font-semibold text-[#D64545]">
             <span className="flex items-center gap-1">
               <ArrowDown className="w-3 h-3" />
-              Asks (Sell)
+              Sell Side (Asks)
             </span>
             <span className="text-[10px] font-mono font-medium text-[#D64545]">
               {orderBook?.totalAskQuantity || 0} Qty
@@ -119,15 +119,15 @@ export function OrderBookDepth({ onSelectPrice }) {
           </div>
 
           <div className="grid grid-cols-3 px-3 py-1 text-[10px] uppercase font-mono text-[#667085] border-b border-[#E2E8F0] bg-[#F8FAFC]">
-            <span>Price</span>
-            <span className="text-right">Qty</span>
-            <span className="text-right">Orders</span>
+            <span>Ask Price</span>
+            <span className="text-right">Ask Qty</span>
+            <span className="text-right">Working</span>
           </div>
 
           <div className="overflow-y-auto flex-1 divide-y divide-[#E2E8F0]">
             {asks.length === 0 ? (
               <div className="py-8 text-center text-[#94A3B8] text-xs italic">
-                No active sell orders
+                No active orders at this price level.
               </div>
             ) : (
               asks.map((level) => {

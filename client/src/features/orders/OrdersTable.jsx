@@ -59,7 +59,7 @@ export function OrdersTable({ orders = [], onOrderUpdated }) {
       <div className="sm:hidden space-y-2.5">
         {orders.length === 0 ? (
           <div className="py-8 text-center text-[#94A3B8] italic bg-white rounded-xl border border-[#E2E8F0] text-xs">
-            No orders found.
+            No working orders. Orders you submit will appear here while they remain active.
           </div>
         ) : (
           orders.map((order) => (
@@ -151,15 +151,15 @@ export function OrdersTable({ orders = [], onOrderUpdated }) {
         <table className="w-full text-left text-xs min-w-[700px]">
           <thead className="bg-[#F8FAFC] text-[#667085] uppercase text-[10px] font-mono tracking-wider border-b border-[#E2E8F0]">
             <tr>
-              <th className="py-3 px-3.5">Order Ref</th>
+              <th className="py-3 px-3.5">Order Reference</th>
               <th className="py-3 px-3">Instrument</th>
               <th className="py-3 px-3">Side</th>
-              <th className="py-3 px-3">Type</th>
+              <th className="py-3 px-3">Order Type</th>
               <th className="py-3 px-3">Limit Price</th>
               <th className="py-3 px-3">Filled / Qty</th>
-              <th className="py-3 px-3">Avg Price</th>
-              <th className="py-3 px-3">Status</th>
-              <th className="py-3 px-3">Created</th>
+              <th className="py-3 px-3">Average Fill Price</th>
+              <th className="py-3 px-3">Order Status</th>
+              <th className="py-3 px-3">Submitted</th>
               <th className="py-3 px-3.5 text-right">Actions</th>
             </tr>
           </thead>
@@ -167,7 +167,7 @@ export function OrdersTable({ orders = [], onOrderUpdated }) {
             {orders.length === 0 ? (
               <tr>
                 <td colSpan={10} className="py-12 text-center text-[#94A3B8] italic font-sans">
-                  No orders found.
+                  No working orders. Orders you submit will appear here while they remain active.
                 </td>
               </tr>
             ) : (
@@ -245,8 +245,8 @@ export function OrdersTable({ orders = [], onOrderUpdated }) {
       {/* Confirmation Modal for Order Cancellation */}
       <ConfirmModal
         isOpen={!!orderToCancel}
-        title="Cancel Resting Order"
-        message={`Are you sure you want to cancel ${orderToCancel?.side} order ${orderToCancel?.orderId} for ${orderToCancel?.remainingQuantity} shares of ${orderToCancel?.instrument}? Any remaining reserved cash or shares will be immediately released.`}
+        title="Cancel Working Order"
+        message={`Are you sure you want to cancel ${orderToCancel?.side} order ${orderToCancel?.orderId} for ${orderToCancel?.remainingQuantity} unfilled shares of ${orderToCancel?.instrument}? Any remaining reserved cash or shares will be immediately released.`}
         confirmText="Cancel Order"
         isDestructive={true}
         isLoading={isCancelling}

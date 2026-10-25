@@ -13,7 +13,7 @@ export function PositionsTable({ positions = [] }) {
       <div className="sm:hidden space-y-2.5">
         {positions.length === 0 ? (
           <div className="py-8 text-center text-[#94A3B8] italic bg-white rounded-xl border border-[#E2E8F0] text-xs">
-            No active stock holdings in portfolio.
+            No open positions. Positions are created when buy orders execute.
           </div>
         ) : (
           positions.map((pos) => {
@@ -53,7 +53,7 @@ export function PositionsTable({ positions = [] }) {
                     </span>
                   </div>
                   <div>
-                    <span className="text-[10px] text-[#667085] font-sans block">Avg Cost</span>
+                    <span className="text-[10px] text-[#667085] font-sans block">Average Cost</span>
                     <span className="text-[#667085]">
                       {formatINR(pos.averageCostPricePaise)}
                     </span>
@@ -68,10 +68,10 @@ export function PositionsTable({ positions = [] }) {
 
                 <div className="flex items-center justify-between pt-1 border-t border-[#F1F5F9] text-[11px] font-mono">
                   <span className="text-[#667085] font-sans text-[10px]">
-                    Invested: <strong className="font-mono text-[#172B4D]">{formatINR(pos.totalCostBasisPaise)}</strong>
+                    Cost Basis: <strong className="font-mono text-[#172B4D]">{formatINR(pos.totalCostBasisPaise)}</strong>
                   </span>
                   <span className="font-semibold text-[#172B4D]">
-                    Value: {formatINR(pos.marketValuePaise)}
+                    Market Value: {formatINR(pos.marketValuePaise)}
                   </span>
                 </div>
               </div>
@@ -86,21 +86,21 @@ export function PositionsTable({ positions = [] }) {
           <thead className="bg-[#F8FAFC] text-[#667085] uppercase text-[10px] font-mono tracking-wider border-b border-[#E2E8F0]">
             <tr>
               <th className="py-3 px-3.5">Instrument</th>
-              <th className="py-3 px-3">Owned Shares</th>
-              <th className="py-3 px-3">Reserved</th>
-              <th className="py-3 px-3">Available</th>
-              <th className="py-3 px-3">Avg Cost Price</th>
-              <th className="py-3 px-3">Market Price</th>
-              <th className="py-3 px-3">Total Investment</th>
+              <th className="py-3 px-3">Owned Quantity</th>
+              <th className="py-3 px-3">Reserved Quantity</th>
+              <th className="py-3 px-3">Available Quantity</th>
+              <th className="py-3 px-3">Average Cost</th>
+              <th className="py-3 px-3">Current Price</th>
+              <th className="py-3 px-3">Cost Basis</th>
               <th className="py-3 px-3">Market Value</th>
-              <th className="py-3 px-3.5 text-right">Unrealized P&L</th>
+              <th className="py-3 px-3.5 text-right">Unrealized P&amp;L</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[#E2E8F0] font-mono text-[11px]">
             {positions.length === 0 ? (
               <tr>
                 <td colSpan={9} className="py-12 text-center text-[#94A3B8] italic font-sans">
-                  No active stock holdings in portfolio.
+                  No open positions. Positions are created when buy orders execute.
                 </td>
               </tr>
             ) : (

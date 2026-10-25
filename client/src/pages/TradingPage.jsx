@@ -97,7 +97,7 @@ export function TradingPage() {
         <div className="space-y-2 min-w-0">
           <h3 className="font-semibold text-[#172B4D] text-xs flex items-center gap-2">
             <Clock className="w-3.5 h-3.5 text-[#087F5B]" />
-            Your Recent Orders ({selectedSymbol})
+            Working & Recent Orders ({selectedSymbol})
           </h3>
           <OrdersTable orders={instrumentOrders} onOrderUpdated={loadInstrumentData} />
         </div>
@@ -153,12 +153,12 @@ export function TradingPage() {
             <table className="w-full text-left text-xs min-w-[480px]">
               <thead className="bg-[#F8FAFC] text-[#667085] uppercase text-[10px] font-mono tracking-wider border-b border-[#E2E8F0]">
                 <tr>
-                  <th className="py-2.5 px-3">Exec ID</th>
+                  <th className="py-2.5 px-3">Execution Reference</th>
                   <th className="py-2.5 px-3">Side</th>
-                  <th className="py-2.5 px-3">Price</th>
-                  <th className="py-2.5 px-3">Shares</th>
-                  <th className="py-2.5 px-3">Notional</th>
-                  <th className="py-2.5 px-3">Time</th>
+                  <th className="py-2.5 px-3">Execution Price</th>
+                  <th className="py-2.5 px-3">Executed Qty</th>
+                  <th className="py-2.5 px-3">Notional Value</th>
+                  <th className="py-2.5 px-3">Execution Timestamp</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#E2E8F0] font-mono text-[11px]">

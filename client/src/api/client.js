@@ -25,7 +25,7 @@ async function request(endpoint, options = {}) {
   try {
     response = await fetch(`${API_BASE_URL}${endpoint}`, config);
   } catch (err) {
-    throw new Error('Network error: Unable to reach the TradeFlow server. Please ensure the backend is running.');
+    throw new Error('Connection to the trading service was interrupted. Please ensure the service is active and retry.');
   }
 
   let data;

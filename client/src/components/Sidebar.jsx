@@ -14,12 +14,12 @@ import {
 } from 'lucide-react';
 
 const NAV_LINKS = [
-  { to: '/', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/terminal', label: 'Trading', icon: TrendingUp },
-  { to: '/orderbook', label: 'Order Book', icon: Layers },
-  { to: '/orders', label: 'My Orders', icon: ListOrdered },
-  { to: '/portfolio', label: 'Portfolio', icon: Briefcase },
-  { to: '/activity', label: 'Executions', icon: History },
+  { to: '/', label: 'Trading Overview', icon: LayoutDashboard },
+  { to: '/terminal', label: 'Order Execution', icon: TrendingUp },
+  { to: '/orderbook', label: 'Market Depth', icon: Layers },
+  { to: '/orders', label: 'Orders & Execution', icon: ListOrdered },
+  { to: '/portfolio', label: 'Positions', icon: Briefcase },
+  { to: '/activity', label: 'Execution History', icon: History },
 ];
 
 export function Sidebar({

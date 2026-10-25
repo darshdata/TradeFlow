@@ -75,34 +75,40 @@ export function PortfolioPage() {
         <div>
           <h1 className="text-base font-bold text-[#172B4D] flex items-center gap-2">
             <Briefcase className="w-4 h-4 text-[#087F5B]" />
-            Portfolio Valuations & Position Ledger
+            Positions &amp; Account Balances
           </h1>
           <p className="text-xs text-[#667085]">
-            Persistent simulated holdings, reservation invariants, and position-level cost basis tracking.
+            Monitor simulated equity holdings, share reservations, cost basis, and realized profit/loss.
           </p>
         </div>
 
         {audit?.isReconciled && (
           <div className="flex items-center gap-1.5 px-3 py-1 bg-[#E6F4EF] border border-[#A7F3D0] rounded-lg text-[#087F5B] text-xs font-mono">
             <ShieldCheck className="w-4 h-4" />
-            <span>Accounting Invariants: Reconciled</span>
+            <span>Ledger Invariants Reconciled</span>
           </div>
         )}
       </div>
 
       {/* KPI Financial Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Total Portfolio Value */}
-        <div className="bg-white border border-[#E2E8F0] p-4.5 rounded-xl shadow-2xs space-y-1.5">
-          <span className="text-[#667085] text-xs font-medium block">Total Portfolio Value</span>
+        {/* Account Equity */}
+        <div
+          className="bg-white border border-[#E2E8F0] p-4.5 rounded-xl shadow-2xs space-y-1.5"
+          title="Total simulated account valuation combining free cash, reserved cash, and marked position values."
+        >
+          <span className="text-[#667085] text-xs font-medium block">Account Equity</span>
           <span className="text-2xl font-bold font-mono text-[#172B4D] block tracking-tight">
             {formatINR(metrics?.totalPortfolioValuePaise || 0)}
           </span>
-          <span className="text-[11px] text-[#667085]">Total Cash + Stock Market Values</span>
+          <span className="text-[11px] text-[#667085]">Total Cash + Marked Stock Values</span>
         </div>
 
         {/* Free Available Cash */}
-        <div className="bg-white border border-[#E2E8F0] p-4.5 rounded-xl shadow-2xs space-y-1.5">
+        <div
+          className="bg-white border border-[#E2E8F0] p-4.5 rounded-xl shadow-2xs space-y-1.5"
+          title="Cash currently available for new buy orders after accounting for existing reservations."
+        >
           <span className="text-[#667085] text-xs font-medium block">Available Cash</span>
           <span className="text-2xl font-bold font-mono text-[#087F5B] block tracking-tight">
             {formatINR(account?.availableCashPaise || 0)}
@@ -111,7 +117,10 @@ export function PortfolioPage() {
         </div>
 
         {/* Locked Reserved Cash */}
-        <div className="bg-white border border-[#E2E8F0] p-4.5 rounded-xl shadow-2xs space-y-1.5">
+        <div
+          className="bg-white border border-[#E2E8F0] p-4.5 rounded-xl shadow-2xs space-y-1.5"
+          title="Cash committed to active buy orders that have not yet been fully executed or cancelled."
+        >
           <span className="text-[#667085] text-xs font-medium block">Reserved Cash</span>
           <span className="text-2xl font-bold font-mono text-[#B7791F] block tracking-tight">
             {formatINR(account?.reservedCashPaise || 0)}
@@ -120,8 +129,11 @@ export function PortfolioPage() {
         </div>
 
         {/* Total Realized P&L */}
-        <div className="bg-white border border-[#E2E8F0] p-4.5 rounded-xl shadow-2xs space-y-1.5">
-          <span className="text-[#667085] text-xs font-medium block">Total Realized P&L</span>
+        <div
+          className="bg-white border border-[#E2E8F0] p-4.5 rounded-xl shadow-2xs space-y-1.5"
+          title="Cumulative profit or loss calculated from completed sell executions using weighted average cost basis."
+        >
+          <span className="text-[#667085] text-xs font-medium block">Total Realized P&amp;L</span>
           <span
             className={`text-2xl font-bold font-mono block tracking-tight ${
               (metrics?.totalRealizedPnlPaise || 0) >= 0 ? 'text-[#087F5B]' : 'text-[#D64545]'
@@ -139,7 +151,7 @@ export function PortfolioPage() {
         <div className="lg:col-span-2 space-y-3">
           <h2 className="text-sm font-semibold text-[#172B4D] flex items-center gap-2">
             <TrendingUp className="w-4 h-4 text-[#087F5B]" />
-            Holding Positions ({positions.length})
+            Active Positions ({positions.length})
           </h2>
           <PositionsTable positions={positions} />
         </div>
@@ -153,7 +165,7 @@ export function PortfolioPage() {
           <div className="h-64 my-2">
             {chartData.length === 0 ? (
               <div className="h-full flex items-center justify-center text-[#94A3B8] text-xs italic">
-                No asset valuation data
+                No active positions or cash valuation records available.
               </div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">

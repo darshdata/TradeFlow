@@ -108,15 +108,15 @@ export function OrderTicket({ prefilledPrice, onOrderSubmitted }) {
 
     if (!isFormValid) {
       if (hasInsufficientCash) {
-        setErrorMessage(`Insufficient cash. Required: ${formatINR(requiredCashPaise)}, Available: ${formatINR(availableCashPaise)}`);
+        setErrorMessage('Insufficient available cash to reserve the required amount for this order.');
         return;
       }
       if (hasInsufficientShares) {
-        setErrorMessage(`Insufficient shares. Required: ${numQty}, Available in portfolio: ${availableShares}`);
+        setErrorMessage('Insufficient available quantity. Some shares may already be reserved by another active sell order.');
         return;
       }
       if (!isTickValid) {
-        setErrorMessage(`Price must conform to ${formatINR(selectedInstrument?.tickSizePaise || 5)} tick size.`);
+        setErrorMessage("Enter a valid limit price that satisfies the instrument's price and tick-size rules.");
         return;
       }
       return;
@@ -146,7 +146,7 @@ export function OrderTicket({ prefilledPrice, onOrderSubmitted }) {
       refreshAll();
       if (onOrderSubmitted) onOrderSubmitted(res);
     } catch (err) {
-      setErrorMessage(err.message || 'Order submission failed');
+      setErrorMessage(err.message || 'Order submission could not be completed. Please retry.');
       setShowConfirm(false);
     } finally {
       setIsSubmitting(false);
@@ -183,7 +183,7 @@ export function OrderTicket({ prefilledPrice, onOrderSubmitted }) {
               }`}
             >
               <TrendingUp className="w-3.5 h-3.5" />
-              BUY {selectedSymbol}
+              Buy {selectedSymbol}
             </button>
             <button
               type="button"
@@ -198,7 +198,7 @@ export function OrderTicket({ prefilledPrice, onOrderSubmitted }) {
               }`}
             >
               <TrendingDown className="w-3.5 h-3.5" />
-              SELL {selectedSymbol}
+              Sell {selectedSymbol}
             </button>
           </div>
 
@@ -319,7 +319,7 @@ export function OrderTicket({ prefilledPrice, onOrderSubmitted }) {
           {/* Balances & Financial Reservation Breakdown */}
           <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-3 space-y-2 text-xs">
             <div className="flex items-center justify-between">
-              <span className="text-[#667085]">Estimated Notional:</span>
+              <span className="text-[#667085]">Estimated Order Value:</span>
               <span className="font-mono font-semibold text-[#172B4D]">
                 {formatINR(estimatedNotionalPaise)}
               </span>
@@ -337,7 +337,7 @@ export function OrderTicket({ prefilledPrice, onOrderSubmitted }) {
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-[11px] pt-1 border-t border-[#E2E8F0]">
-                  <span className="text-[#667085]">Available Free Cash:</span>
+                  <span className="text-[#667085]">Available Cash:</span>
                   <span className={`font-mono ${hasInsufficientCash ? 'text-[#D64545] font-bold' : 'text-[#667085]'}`}>
                     {formatINR(availableCashPaise)}
                   </span>
@@ -347,7 +347,7 @@ export function OrderTicket({ prefilledPrice, onOrderSubmitted }) {
               <div className="flex items-center justify-between text-[11px] pt-1 border-t border-[#E2E8F0]">
                 <span className="text-[#667085] flex items-center gap-1">
                   <Briefcase className="w-3 h-3 text-[#D64545]" />
-                  Shares Available to Sell:
+                  Available Quantity:
                 </span>
                 <span className={`font-mono ${hasInsufficientShares ? 'text-[#D64545] font-bold' : 'text-[#667085]'}`}>
                   {formatQuantity(availableShares)} shares
@@ -369,22 +369,22 @@ export function OrderTicket({ prefilledPrice, onOrderSubmitted }) {
             <div className="p-3 bg-[#F0FDF4] border border-[#BBF7D0] rounded-xl text-xs text-[#166534] space-y-1.5 animate-in fade-in">
               <div className="flex items-center gap-1.5 font-semibold text-[#087F5B]">
                 <CheckCircle className="w-4 h-4" />
-                <span>Order Accepted: {successResult.order?.orderId}</span>
+                <span>Order accepted. It is now eligible for matching.</span>
               </div>
               <div className="text-[11px] text-[#166534] font-mono">
-                Status: {successResult.order?.status} • Filled: {formatQuantity(successResult.order?.filledQuantity)}/
+                Order ID: {successResult.order?.orderId} • Status: {successResult.order?.status} • Filled: {formatQuantity(successResult.order?.filledQuantity)}/
                 {formatQuantity(successResult.order?.quantity)} shares
               </div>
               {successResult.executions?.length > 0 && (
                 <div className="text-[10px] text-[#087F5B] pt-1 border-t border-[#BBF7D0]">
-                  Matched {successResult.executions.length} execution(s) at avg price {formatINR(successResult.order?.averageExecutionPriceInPaise)}
+                  Matched {successResult.executions.length} execution(s) at average price {formatINR(successResult.order?.averageExecutionPriceInPaise)}
                 </div>
               )}
             </div>
           )}
         </div>
 
-        {/* Submit Button */}
+        {/* Action Button */}
         <button
           type="submit"
           disabled={!isFormValid || isSubmitting}
@@ -400,16 +400,21 @@ export function OrderTicket({ prefilledPrice, onOrderSubmitted }) {
             <span className="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />
           )}
           <span>
-            {side === 'BUY' ? 'Submit BUY Order' : 'Submit SELL Order'}
+            {isSubmitting
+              ? 'Submitting order…'
+              : side === 'BUY'
+              ? 'Place Buy Order'
+              : 'Place Sell Order'}
           </span>
         </button>
       </form>
 
-      {/* Confirmation Modal */}
+      {/* Review Order Confirmation Modal */}
       <ConfirmModal
         isOpen={showConfirm}
-        title={`Confirm ${side} Order`}
-        confirmText={`Confirm & Place ${side}`}
+        title={side === 'BUY' ? 'Review Buy Order' : 'Review Sell Order'}
+        message={side === 'BUY' ? 'Review your buy order before submission.' : 'Review your sell order before submission.'}
+        confirmText={side === 'BUY' ? 'Place Buy Order' : 'Place Sell Order'}
         isDestructive={side === 'SELL'}
         isLoading={isSubmitting}
         onConfirm={handleConfirmOrder}
@@ -421,7 +426,7 @@ export function OrderTicket({ prefilledPrice, onOrderSubmitted }) {
             <span className="font-bold">{selectedSymbol}</span>
           </div>
           <div className="flex justify-between py-1 border-b border-[#E2E8F0]">
-            <span className="text-[#667085] font-sans">Side & Type:</span>
+            <span className="text-[#667085] font-sans">Side &amp; Type:</span>
             <span className={side === 'BUY' ? 'text-[#087F5B] font-bold' : 'text-[#D64545] font-bold'}>
               {side} {orderType}
             </span>
@@ -437,7 +442,7 @@ export function OrderTicket({ prefilledPrice, onOrderSubmitted }) {
             </div>
           )}
           <div className="flex justify-between py-1 text-sm font-bold text-[#172B4D] pt-1">
-            <span className="font-sans">Estimated Obligation:</span>
+            <span className="font-sans">Estimated Order Value:</span>
             <span className={side === 'BUY' ? 'text-[#087F5B]' : 'text-[#D64545]'}>
               {formatINR(estimatedNotionalPaise)}
             </span>

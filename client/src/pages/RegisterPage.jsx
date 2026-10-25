@@ -36,11 +36,14 @@ export function RegisterPage() {
             TF
           </div>
           <h2 className="text-xl font-bold text-[#172B4D] tracking-tight">
-            Create TradeFlow Account
+            Create Simulated Trading Account
           </h2>
           <p className="text-xs text-[#667085]">
-            Includes an initial <strong className="text-[#087F5B] font-semibold">₹1,00,000.00</strong> simulated cash balance for immediate trading.
+            Create an account to explore order placement and simulated execution.
           </p>
+          <div className="pt-1 text-[11px] text-[#087F5B] bg-[#E6F4EF] py-1 px-2.5 rounded-lg border border-[#A7F3D0] inline-block font-medium">
+            Includes an initial <strong>₹1,00,000.00</strong> simulated cash balance for immediate trading.
+          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -112,7 +115,7 @@ export function RegisterPage() {
               <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : (
               <>
-                <span>Complete Registration & Open Terminal</span>
+                <span>Create Account</span>
                 <ArrowRight className="w-4 h-4" />
               </>
             )}

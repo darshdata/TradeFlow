@@ -27,10 +27,10 @@ export function InstrumentSelector() {
           <div className="min-w-0">
             <div className="flex items-center gap-1.5">
               <span className="font-bold text-[#172B4D] text-xs sm:text-sm truncate">
-                {selectedInstrument?.symbol || 'Select Stock'}
+                {selectedInstrument?.symbol || 'Select Instrument'}
               </span>
-              <span className="text-[9px] sm:text-[10px] bg-[#F1F5F9] text-[#667085] px-1 py-0.5 rounded font-mono font-medium border border-[#E2E8F0] shrink-0">
-                NSE
+              <span className="text-[9px] sm:text-[10px] bg-[#E6F4EF] text-[#087F5B] px-1 py-0.5 rounded font-mono font-medium border border-[#A7F3D0] shrink-0">
+                EQUITY
               </span>
             </div>
             <p className="text-[10px] sm:text-[11px] text-[#667085] truncate max-w-[120px] sm:max-w-[200px]">
@@ -63,7 +63,7 @@ export function InstrumentSelector() {
                 <Search className="w-3.5 h-3.5 text-[#667085] absolute left-2.5 top-2.5" />
                 <input
                   type="text"
-                  placeholder="Search symbol or company..."
+                  placeholder="Filter by symbol or instrument name..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   className="w-full bg-white border border-[#CBD5E1] rounded-lg pl-8 pr-3 py-1.5 text-xs text-[#172B4D] placeholder-[#94A3B8] focus:outline-hidden focus:border-[#087F5B] focus:ring-1 focus:ring-[#087F5B]"
@@ -74,8 +74,8 @@ export function InstrumentSelector() {
 
             <div className="max-h-64 overflow-y-auto divide-y divide-[#E2E8F0]">
               {filtered.length === 0 ? (
-                <div className="py-6 text-center text-[#667085] text-xs italic">
-                  No stocks match "{search}"
+                <div className="py-6 px-4 text-center text-[#667085] text-xs">
+                  No instruments match your search. Check the symbol or try another instrument.
                 </div>
               ) : (
                 filtered.map((inst) => {

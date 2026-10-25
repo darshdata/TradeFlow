@@ -20,12 +20,12 @@ export function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const navLinks = [
-    { to: '/', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/terminal', label: 'Trading', icon: TrendingUp },
-    { to: '/orderbook', label: 'Order Book', icon: Layers },
-    { to: '/orders', label: 'My Orders', icon: ListOrdered },
-    { to: '/portfolio', label: 'Portfolio', icon: Briefcase },
-    { to: '/activity', label: 'Executions', icon: History },
+    { to: '/', label: 'Trading Overview', icon: LayoutDashboard },
+    { to: '/terminal', label: 'Order Execution', icon: TrendingUp },
+    { to: '/orderbook', label: 'Market Depth', icon: Layers },
+    { to: '/orders', label: 'Orders & Execution', icon: ListOrdered },
+    { to: '/portfolio', label: 'Positions', icon: Briefcase },
+    { to: '/activity', label: 'Execution History', icon: History },
   ];
 
   return (
@@ -122,7 +122,7 @@ export function Navbar() {
                         className="flex items-center gap-2 px-3 py-2 text-[#172B4D] hover:bg-[#F8FAFC]"
                       >
                         <Briefcase className="w-3.5 h-3.5 text-[#667085]" />
-                        My Portfolio
+                        Positions
                       </Link>
                       <button
                         onClick={() => {
@@ -150,7 +150,7 @@ export function Navbar() {
                   to="/register"
                   className="px-3 py-1.5 rounded-lg bg-[#087F5B] hover:bg-[#066649] text-white font-medium transition-colors shadow-2xs"
                 >
-                  Get Started
+                  Create Account
                 </Link>
               </div>
             )}

@@ -144,11 +144,11 @@ export function OrderDetailModal({ orderId, isOpen, onClose }) {
                     <table className="w-full text-left">
                       <thead className="bg-[#F8FAFC] text-[#667085] text-[10px] uppercase font-mono border-b border-[#E2E8F0]">
                         <tr>
-                          <th className="py-2.5 px-3">Execution ID</th>
-                          <th className="py-2.5 px-3">Price</th>
-                          <th className="py-2.5 px-3">Qty</th>
-                          <th className="py-2.5 px-3">Notional</th>
-                          <th className="py-2.5 px-3">Time</th>
+                          <th className="py-2.5 px-3">Execution Reference</th>
+                          <th className="py-2.5 px-3">Execution Price</th>
+                          <th className="py-2.5 px-3">Executed Qty</th>
+                          <th className="py-2.5 px-3">Notional Value</th>
+                          <th className="py-2.5 px-3">Execution Timestamp</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-[#E2E8F0] font-mono text-[11px]">

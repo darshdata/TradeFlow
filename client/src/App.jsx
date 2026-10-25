@@ -56,7 +56,7 @@ function AppShell({ children }) {
         </main>
 
         <footer className="border-t border-[#E2E8F0] bg-white py-3.5 px-4 text-center text-[11px] sm:text-xs text-[#667085] font-mono">
-          TradeFlow Simulated Order Execution & Matching Platform • Deterministic Price-Time Priority FIFO Engine
+          TradeFlow Simulated Equity Trading &amp; Order Execution Platform • Price-Time Priority (FIFO) Engine
         </footer>
       </div>
     </div>
@@ -75,7 +75,7 @@ function PublicShell({ children }) {
           <span className="font-bold text-[#172B4D] text-sm tracking-tight flex items-center gap-1.5">
             TradeFlow
             <span className="text-[10px] bg-[#E6F4EF] text-[#087F5B] px-1.5 py-0.5 rounded font-mono font-medium border border-[#A7F3D0]">
-              TERMINAL
+              SIMULATED
             </span>
           </span>
         </Link>
@@ -84,7 +84,7 @@ function PublicShell({ children }) {
         {children}
       </main>
       <footer className="border-t border-[#E2E8F0] bg-white py-3.5 px-4 text-center text-xs text-[#667085] font-mono">
-        TradeFlow Simulated Order Execution & Matching Platform • Integer Paise Precision
+        TradeFlow Simulated Equity Trading Platform • Deterministic Matching Engine
       </footer>
     </div>
   );

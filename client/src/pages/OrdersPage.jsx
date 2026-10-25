@@ -52,10 +52,10 @@ export function OrdersPage() {
         <div>
           <h1 className="text-base font-bold text-[#172B4D] flex items-center gap-2">
             <ListOrdered className="w-4 h-4 text-[#087F5B]" />
-            My Orders & Lifecycle Audit
+            Open &amp; Historical Orders
           </h1>
           <p className="text-xs text-[#667085]">
-            Real-time tracking of order submissions, cancellations, and execution matches.
+            Review working orders and track any quantity that remains unfilled or historical execution status.
           </p>
         </div>
 

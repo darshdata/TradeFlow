@@ -58,12 +58,12 @@ export function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      {/* Welcome & Account Summary Banner */}
+      {/* Account Overview Summary Banner */}
       <div className="bg-white border border-[#E2E8F0] p-4 sm:p-6 rounded-2xl shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-xs font-semibold px-2 py-0.5 rounded bg-[#E6F4EF] text-[#087F5B] border border-[#A7F3D0] font-mono">
-              MARKET TERMINAL
+              SIMULATED EXCHANGE
             </span>
             {audit?.isReconciled && (
               <span className="flex items-center gap-1 text-[11px] text-[#087F5B] font-medium bg-[#F0FDF4] px-2 py-0.5 rounded border border-[#BBF7D0]">
@@ -73,10 +73,10 @@ export function DashboardPage() {
             )}
           </div>
           <h1 className="text-lg sm:text-xl font-bold text-[#172B4D] mt-1.5 tracking-tight">
-            Welcome back, {user?.name || 'Trader'}
+            Trading Overview — {user?.name || 'Simulated Trader'}
           </h1>
           <p className="text-xs text-[#667085] mt-0.5">
-            Deterministic price-time priority matching engine with exact integer paise reservation accounting.
+            Monitor account balances, working orders, positions, and recent execution activity.
           </p>
         </div>
 
@@ -85,7 +85,7 @@ export function DashboardPage() {
             to="/terminal"
             className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-[#087F5B] hover:bg-[#066649] text-white text-xs font-semibold transition-all shadow-2xs"
           >
-            <span>Open Trading Terminal</span>
+            <span>Open Order Execution Terminal</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
@@ -93,32 +93,41 @@ export function DashboardPage() {
 
       {/* KPI Financial Metric Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        {/* Total Marked Portfolio Value */}
-        <div className="bg-white border border-[#E2E8F0] p-3.5 sm:p-4.5 rounded-xl shadow-2xs space-y-1">
+        {/* Account Equity */}
+        <div
+          className="bg-white border border-[#E2E8F0] p-3.5 sm:p-4.5 rounded-xl shadow-2xs space-y-1"
+          title="Total simulated account valuation combining free cash, reserved cash, and marked position values."
+        >
           <div className="flex items-center justify-between text-[#667085] text-xs">
-            <span className="font-medium">Total Portfolio Value</span>
+            <span className="font-medium">Account Equity</span>
             <PieChart className="w-4 h-4 text-[#087F5B]" />
           </div>
           <div className="text-xl sm:text-2xl font-bold font-mono text-[#172B4D] tracking-tight">
             {formatINR(metrics?.totalPortfolioValuePaise || account?.totalCashPaise || 0)}
           </div>
-          <p className="text-[10px] sm:text-[11px] text-[#667085]">Total Cash + Marked Stock Holdings</p>
+          <p className="text-[10px] sm:text-[11px] text-[#667085]">Cash + Marked Equity Holdings</p>
         </div>
 
         {/* Available Cash */}
-        <div className="bg-white border border-[#E2E8F0] p-3.5 sm:p-4.5 rounded-xl shadow-2xs space-y-1">
+        <div
+          className="bg-white border border-[#E2E8F0] p-3.5 sm:p-4.5 rounded-xl shadow-2xs space-y-1"
+          title="Cash currently available for new buy orders after accounting for existing reservations."
+        >
           <div className="flex items-center justify-between text-[#667085] text-xs">
-            <span className="font-medium">Available Free Cash</span>
+            <span className="font-medium">Available Cash</span>
             <Wallet className="w-4 h-4 text-[#087F5B]" />
           </div>
           <div className="text-xl sm:text-2xl font-bold font-mono text-[#087F5B] tracking-tight">
             {formatINR(account?.availableCashPaise || 0)}
           </div>
-          <p className="text-[10px] sm:text-[11px] text-[#667085]">Free unreserved capital ready for orders</p>
+          <p className="text-[10px] sm:text-[11px] text-[#667085]">Unreserved capital ready for orders</p>
         </div>
 
         {/* Reserved Cash */}
-        <div className="bg-white border border-[#E2E8F0] p-3.5 sm:p-4.5 rounded-xl shadow-2xs space-y-1">
+        <div
+          className="bg-white border border-[#E2E8F0] p-3.5 sm:p-4.5 rounded-xl shadow-2xs space-y-1"
+          title="Cash committed to active buy orders that have not yet been fully executed or cancelled."
+        >
           <div className="flex items-center justify-between text-[#667085] text-xs">
             <span className="font-medium">Reserved Cash</span>
             <Lock className="w-4 h-4 text-[#B7791F]" />
@@ -126,11 +135,14 @@ export function DashboardPage() {
           <div className="text-xl sm:text-2xl font-bold font-mono text-[#B7791F] tracking-tight">
             {formatINR(account?.reservedCashPaise || 0)}
           </div>
-          <p className="text-[10px] sm:text-[11px] text-[#667085]">Committed to active resting buy limit orders</p>
+          <p className="text-[10px] sm:text-[11px] text-[#667085]">Committed to working buy limit orders</p>
         </div>
 
         {/* Unrealized P&L */}
-        <div className="bg-white border border-[#E2E8F0] p-3.5 sm:p-4.5 rounded-xl shadow-2xs space-y-1">
+        <div
+          className="bg-white border border-[#E2E8F0] p-3.5 sm:p-4.5 rounded-xl shadow-2xs space-y-1"
+          title="Estimated profit or loss on open positions based on the application's current valuation logic."
+        >
           <div className="flex items-center justify-between text-[#667085] text-xs">
             <span className="font-medium">Unrealized P&L</span>
             <TrendingUp className="w-4 h-4 text-[#087F5B]" />
@@ -154,17 +166,17 @@ export function DashboardPage() {
           <div>
             <h3 className="font-semibold text-[#172B4D] text-xs sm:text-sm flex items-center gap-2">
               <Activity className="w-4 h-4 text-[#087F5B]" />
-              NSE Market Equities ({instruments.length})
+              Simulated Market Equities ({instruments.length})
             </h3>
             <p className="text-[10px] sm:text-[11px] text-[#667085]">
-              Real-time simulated market instruments eligible for trading.
+              Simulated equity instruments eligible for order placement and matching.
             </p>
           </div>
           <Link
             to="/terminal"
             className="text-xs text-[#087F5B] hover:text-[#066649] font-medium flex items-center gap-1 shrink-0"
           >
-            Trade Now
+            Place Order
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
@@ -187,7 +199,7 @@ export function DashboardPage() {
                   to={`/terminal?symbol=${inst.symbol}`}
                   className="px-3 py-1 rounded-md bg-[#087F5B] text-white text-[11px] font-semibold hover:bg-[#066649] transition-colors"
                 >
-                  Trade
+                  Place Order
                 </Link>
               </div>
 
@@ -220,7 +232,7 @@ export function DashboardPage() {
           <table className="w-full text-left text-xs min-w-[650px]">
             <thead className="bg-[#F8FAFC] text-[#667085] uppercase text-[10px] font-mono tracking-wider border-b border-[#E2E8F0]">
               <tr>
-                <th className="py-2.5 px-3">Symbol</th>
+                <th className="py-2.5 px-3">Instrument</th>
                 <th className="py-2.5 px-3">Name</th>
                 <th className="py-2.5 px-3">Last Price</th>
                 <th className="py-2.5 px-3">Ref Price</th>
@@ -252,10 +264,10 @@ export function DashboardPage() {
                   </td>
                   <td className="py-2.5 px-3 text-right">
                     <Link
-                      to="/terminal"
+                      to={`/terminal?symbol=${inst.symbol}`}
                       className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-[#E6F4EF] hover:bg-[#A7F3D0] text-[#087F5B] font-semibold text-[11px] transition-colors"
                     >
-                      Trade
+                      Place Order
                     </Link>
                   </td>
                 </tr>
@@ -272,20 +284,20 @@ export function DashboardPage() {
           <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-3">
             <h3 className="font-semibold text-[#172B4D] text-xs sm:text-sm flex items-center gap-2">
               <TrendingUp className="w-4 h-4 text-[#087F5B]" />
-              Active Stock Positions ({positions.length})
+              Active Positions ({positions.length})
             </h3>
             <Link
               to="/portfolio"
               className="text-xs text-[#087F5B] hover:text-[#066649] font-medium flex items-center gap-1 shrink-0"
             >
-              Full Portfolio
+              All Positions
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
 
           {positions.length === 0 ? (
             <div className="py-12 text-center text-[#94A3B8] text-xs italic">
-              No shares held yet. Submit a BUY order in the Trading Terminal to start building positions.
+              No open positions. Positions are created when buy orders execute.
             </div>
           ) : (
             <div className="divide-y divide-[#E2E8F0] font-mono text-xs">
@@ -320,20 +332,20 @@ export function DashboardPage() {
           <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-3">
             <h3 className="font-semibold text-[#172B4D] text-sm flex items-center gap-2">
               <History className="w-4 h-4 text-[#087F5B]" />
-              Engine Architecture
+              Execution Architecture
             </h3>
             <Link
               to="/activity"
               className="text-xs text-[#087F5B] hover:text-[#066649] font-medium flex items-center gap-1"
             >
-              Executions
+              Execution History
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
 
           <div className="space-y-3 text-xs">
             <div className="flex justify-between items-center bg-[#F8FAFC] p-2.5 rounded-lg border border-[#E2E8F0]">
-              <span className="text-[#667085]">Active Resting Orders:</span>
+              <span className="text-[#667085]">Working Orders in Book:</span>
               <span className="font-mono font-bold text-[#087F5B]">
                 {metrics?.openOrdersCount || 0}
               </span>
@@ -345,7 +357,7 @@ export function DashboardPage() {
               </span>
             </div>
             <div className="flex justify-between items-center bg-[#F8FAFC] p-2.5 rounded-lg border border-[#E2E8F0]">
-              <span className="text-[#667085]">Matching Priority:</span>
+              <span className="text-[#667085]">Matching Algorithm:</span>
               <span className="font-mono font-medium text-[#172B4D]">Price-Time (FIFO)</span>
             </div>
             <div className="flex justify-between items-center bg-[#F8FAFC] p-2.5 rounded-lg border border-[#E2E8F0]">
@@ -353,7 +365,7 @@ export function DashboardPage() {
               <span className="font-mono font-medium text-[#172B4D]">Prevent Wash Trade</span>
             </div>
             <div className="flex justify-between items-center bg-[#F8FAFC] p-2.5 rounded-lg border border-[#E2E8F0]">
-              <span className="text-[#667085]">Precision Standard:</span>
+              <span className="text-[#667085]">Accounting Precision:</span>
               <span className="font-mono font-medium text-[#087F5B]">Exact Integer Paise</span>
             </div>
           </div>
@@ -365,13 +377,13 @@ export function DashboardPage() {
         <div className="flex items-center justify-between">
           <h3 className="font-semibold text-[#172B4D] text-sm flex items-center gap-2">
             <ListOrdered className="w-4 h-4 text-[#087F5B]" />
-            Recent Order Activity
+            Recent Orders
           </h3>
           <Link
             to="/orders"
             className="text-xs text-[#087F5B] hover:text-[#066649] font-medium flex items-center gap-1"
           >
-            All Orders
+            Open &amp; Historical Orders
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>

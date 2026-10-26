@@ -6,6 +6,7 @@ import {
   calculateNotionalPaise,
   validateTickSize,
   calculatePriceImprovementRefund,
+  verifyPortfolioInvariants,
 } from '../src/engine/financial.js';
 import { ValidationError } from '../src/utils/errors.js';
 
@@ -83,6 +84,55 @@ describe('Financial Utilities & Integer Paise Arithmetic', () => {
     it('returns 0 when executed at exact reserved price or worse', () => {
       expect(calculatePriceImprovementRefund(250000, 250000, 10)).toBe(0);
       expect(calculatePriceImprovementRefund(240000, 250000, 10)).toBe(0);
+    });
+  });
+
+  describe('verifyPortfolioInvariants', () => {
+    it('returns valid when cash, positions, and open orders invariants hold', () => {
+      const account = { totalCashPaise: 1000000, reservedCashPaise: 250000 };
+      const positions = [
+        { instrument: 'RELIANCE', ownedQuantity: 50, reservedQuantity: 10 },
+      ];
+      const openOrders = [
+        { side: 'BUY', instrument: 'TCS', priceInPaise: 25000, remainingQuantity: 10 },
+        { side: 'SELL', instrument: 'RELIANCE', priceInPaise: 260000, remainingQuantity: 10 },
+      ];
+
+      const result = verifyPortfolioInvariants({ account, positions, openOrders });
+      expect(result.invariantsValid).toBe(true);
+      expect(result.discrepancies).toHaveLength(0);
+      expect(result.details.expectedReservedCashPaise).toBe(250000);
+      expect(result.details.availableCashPaise).toBe(750000);
+    });
+
+    it('identifies discrepancies if reserved cash exceeds total cash', () => {
+      const account = { totalCashPaise: 100000, reservedCashPaise: 150000 };
+      const result = verifyPortfolioInvariants({ account, positions: [], openOrders: [] });
+      expect(result.invariantsValid).toBe(false);
+      expect(result.discrepancies.some((d) => d.includes('cannot exceed total cash'))).toBe(true);
+    });
+
+    it('identifies discrepancies if buy order commitments do not match reserved cash', () => {
+      const account = { totalCashPaise: 1000000, reservedCashPaise: 300000 };
+      const openOrders = [
+        { side: 'BUY', instrument: 'INFY', priceInPaise: 150000, remainingQuantity: 1 },
+      ];
+      const result = verifyPortfolioInvariants({ account, positions: [], openOrders });
+      expect(result.invariantsValid).toBe(false);
+      expect(result.discrepancies.some((d) => d.includes('Reserved cash mismatch'))).toBe(true);
+    });
+
+    it('identifies discrepancies if position reserved quantity does not match open sell orders', () => {
+      const account = { totalCashPaise: 1000000, reservedCashPaise: 0 };
+      const positions = [
+        { instrument: 'RELIANCE', ownedQuantity: 50, reservedQuantity: 20 },
+      ];
+      const openOrders = [
+        { side: 'SELL', instrument: 'RELIANCE', remainingQuantity: 15 },
+      ];
+      const result = verifyPortfolioInvariants({ account, positions, openOrders });
+      expect(result.invariantsValid).toBe(false);
+      expect(result.discrepancies.some((d) => d.includes('reserved shares (20) does not match open sell orders sum (15)'))).toBe(true);
     });
   });
 });

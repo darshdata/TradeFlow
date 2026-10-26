@@ -1,16 +1,25 @@
 import mongoose from 'mongoose';
-import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import { env } from './env.js';
 import { logger } from '../utils/logger.js';
 
 let memoryReplSet = null;
 let isReplicaSet = false;
 
-export async function connectDatabase() {
-  let uri = env.MONGODB_URI;
+export async function connectDatabase(customUri) {
+  const rawUri = customUri !== undefined ? customUri : (process.env.MONGODB_URI ?? env.MONGODB_URI);
+  const isProduction = (process.env.NODE_ENV || env.NODE_ENV) === 'production';
+  const uriTrimmed = typeof rawUri === 'string' ? rawUri.trim() : '';
+  const isBlank = !uriTrimmed || uriTrimmed === 'memory';
 
-  if (!uri || uri.trim() === '' || uri === 'memory') {
+  if (isProduction && isBlank) {
+    throw new Error('MONGODB_URI is required in production mode. Ephemeral in-memory database fallback is strictly prohibited.');
+  }
+
+  let uri = isBlank ? '' : uriTrimmed;
+
+  if (!uri) {
     logger.info('No external MONGODB_URI provided. Starting in-memory MongoDB replica set for local transaction support...');
+    const { MongoMemoryReplSet } = await import('mongodb-memory-server');
     memoryReplSet = await MongoMemoryReplSet.create({
       replSet: { count: 1, storageEngine: 'wiredTiger' },
     });
@@ -27,11 +36,13 @@ export async function connectDatabase() {
 
   // Verify replica set status
   try {
-    const admin = mongoose.connection.db.admin();
-    const status = await admin.replSetGetStatus();
-    if (status && status.ok) {
-      isReplicaSet = true;
-      logger.info(`MongoDB connected with active replica set "${status.set}" (Transactions enabled)`);
+    const admin = mongoose.connection.db?.admin?.();
+    if (admin) {
+      const status = await admin.replSetGetStatus();
+      if (status && status.ok) {
+        isReplicaSet = true;
+        logger.info(`MongoDB connected with active replica set "${status.set}" (Transactions enabled)`);
+      }
     }
   } catch (err) {
     // If not a replica set, log note
@@ -53,11 +64,16 @@ export async function disconnectDatabase() {
     await memoryReplSet.stop();
     memoryReplSet = null;
   }
+  isReplicaSet = false;
   logger.info('Database disconnected');
 }
 
 export function hasReplicaSet() {
   return isReplicaSet;
+}
+
+export function getMemoryReplSet() {
+  return memoryReplSet;
 }
 
 /**

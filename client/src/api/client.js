@@ -90,6 +90,7 @@ export const api = {
     getSummary: () => request('/portfolio/summary'),
     getPositions: () => request('/portfolio/positions'),
     getAccount: () => request('/portfolio/account'),
+    reconcile: () => request('/portfolio/reconcile'),
   },
 
   executions: {

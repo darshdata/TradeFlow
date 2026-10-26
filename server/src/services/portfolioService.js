@@ -4,6 +4,8 @@ import { Order } from '../models/Order.js';
 import { Instrument } from '../models/Instrument.js';
 import { Execution } from '../models/Execution.js';
 import { ORDER_STATUSES } from '../config/constants.js';
+import { verifyPortfolioInvariants } from '../engine/financial.js';
+import { withTransaction } from '../config/database.js';
 
 export class PortfolioService {
   /**
@@ -65,15 +67,12 @@ export class PortfolioService {
     // Consistent portfolio value: Total Cash (includes reserved cash) + Total Marked Positions Value
     const totalPortfolioValuePaise = account.totalCashPaise + totalPositionsMarketValuePaise;
 
-    // Reconciliation check: sum of active buy order cash reservations vs account.reservedCashPaise
-    const sumActiveBuyReservations = openOrders
-      .filter((o) => o.side === 'BUY')
-      .reduce((sum, o) => sum + (o.priceInPaise * o.remainingQuantity), 0);
-
-    const isReconciled =
-      account.totalCashPaise >= account.reservedCashPaise &&
-      account.reservedCashPaise >= 0 &&
-      sumActiveBuyReservations === account.reservedCashPaise;
+    // Authoritative ledger invariant reconciliation
+    const auditResult = verifyPortfolioInvariants({
+      account: account.toObject ? account.toObject() : account,
+      positions,
+      openOrders,
+    });
 
     const openOrdersCount = openOrders.length;
     const filledOrdersCount = await Order.countDocuments({
@@ -99,11 +98,69 @@ export class PortfolioService {
       },
       recentExecutions,
       audit: {
-        isReconciled,
-        sumActiveBuyReservations,
+        isReconciled: auditResult.invariantsValid,
+        discrepancies: auditResult.discrepancies,
+        sumActiveBuyReservations: auditResult.details.expectedReservedCashPaise,
         recordedReservedCashPaise: account.reservedCashPaise,
       },
     };
+  }
+
+  /**
+   * Authoritative portfolio invariant reconciliation endpoint service.
+   * Employs multi-document transaction snapshot isolation when a replica set is active,
+   * guaranteeing that account cash, positions, and active orders are evaluated against
+   * the exact same point-in-time database snapshot.
+   */
+  static async reconcileUserPortfolio(userId) {
+    return await withTransaction(async (session) => {
+      let accountQuery = Account.findOne({ userId });
+      let positionsQuery = Position.find({ userId });
+      let ordersQuery = Order.find({
+        userId,
+        status: { $in: [ORDER_STATUSES.OPEN, ORDER_STATUSES.PARTIALLY_FILLED] },
+      });
+
+      if (session) {
+        accountQuery = accountQuery.session(session);
+        positionsQuery = positionsQuery.session(session);
+        ordersQuery = ordersQuery.session(session);
+      } else {
+        accountQuery = accountQuery.readConcern('majority');
+        positionsQuery = positionsQuery.readConcern('majority');
+        ordersQuery = ordersQuery.readConcern('majority');
+      }
+
+      let account = await accountQuery;
+      if (!account) {
+        if (session) {
+          const created = await Account.create([{ userId }], { session });
+          account = created[0];
+        } else {
+          account = await Account.create({ userId });
+        }
+      }
+
+      const [positions, openOrders] = await Promise.all([
+        positionsQuery.lean(),
+        ordersQuery.lean(),
+      ]);
+
+      const result = verifyPortfolioInvariants({
+        account: account.toObject ? account.toObject() : account,
+        positions,
+        openOrders,
+      });
+
+      return {
+        userId,
+        invariantsValid: result.invariantsValid,
+        discrepancies: result.discrepancies,
+        details: result.details,
+        readIsolation: session ? 'TRANSACTIONAL_SNAPSHOT' : 'MAJORITY_READ_CONCERN',
+        reconciledAt: new Date().toISOString(),
+      };
+    });
   }
 
   static async getPositions(userId) {

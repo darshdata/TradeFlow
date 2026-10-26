@@ -154,6 +154,13 @@ async function verifyEndToEnd() {
     await MarketService.seedInstruments();
     await MarketService.seedAllDemoLiquidity();
 
+    // Reconstruct in-memory order book from active orders (as in server startup)
+    const activeOrders = await Order.find({
+      status: { $in: [ORDER_STATUSES.OPEN, ORDER_STATUSES.PARTIALLY_FILLED] },
+      remainingQuantity: { $gt: 0 },
+    }).lean();
+    orderBookManager.rebuildFromDatabase(activeOrders);
+
     const instrumentsCount = await Instrument.countDocuments();
     const lpUser = await User.findOne({ role: 'system_liquidity' });
     const lpAccount = lpUser ? await Account.findOne({ userId: lpUser._id }) : null;

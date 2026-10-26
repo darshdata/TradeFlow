@@ -6,6 +6,7 @@ const router = Router();
 
 router.use(authenticate);
 
+router.get('/reconcile', PortfolioController.reconcile);
 router.get('/summary', PortfolioController.getSummary);
 router.get('/positions', PortfolioController.getPositions);
 router.get('/account', PortfolioController.getAccount);

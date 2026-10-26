@@ -10,13 +10,13 @@ import { NotFoundError } from './utils/errors.js';
 export function createApp() {
   const app = express();
 
-  // Explicit CORS configuration
-  const allowedOrigins = [env.CLIENT_URL, 'http://localhost:5174', 'http://127.0.0.1:5174'];
+  // Explicit CORS configuration supporting local dev and Vercel deployments
+  const allowedOrigins = [env.CLIENT_URL, 'http://localhost:5174', 'http://127.0.0.1:5174', 'https://trade-flow-sigma.vercel.app'];
   app.use(
     cors({
       origin: (origin, callback) => {
         // Allow requests with no origin (e.g. mobile apps, curl, server-to-server)
-        if (!origin || allowedOrigins.includes(origin)) {
+        if (!origin || allowedOrigins.includes(origin) || /^https:\/\/trade-flow.*\.vercel\.app$/.test(origin)) {
           callback(null, true);
         } else {
           callback(new Error(`Origin ${origin} not allowed by CORS`));

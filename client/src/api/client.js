@@ -1,6 +1,10 @@
 // Centralized API Client for TradeFlow
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5002/api/v1';
+const rawBaseUrl = import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL =
+  (!rawBaseUrl || rawBaseUrl.includes('onrender.com') || rawBaseUrl.startsWith('mongodb'))
+    ? (import.meta.env.PROD ? 'https://trade-flow-rwxp.vercel.app/api/v1' : 'http://localhost:5002/api/v1')
+    : rawBaseUrl;
 
 async function request(endpoint, options = {}) {
   const token = localStorage.getItem('tradeflow_token');

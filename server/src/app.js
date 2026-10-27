@@ -34,7 +34,7 @@ export function createApp() {
   app.use(cookieParser());
 
   // Root status endpoint
-  app.get('/', (req, res) => {
+  app.get(['/', '/api'], (req, res) => {
     res.status(200).json({
       name: 'TradeFlow API Gateway',
       version: '1.0.0',

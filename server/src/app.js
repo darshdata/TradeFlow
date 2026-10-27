@@ -33,6 +33,20 @@ export function createApp() {
   app.use(express.urlencoded({ extended: true, limit: '100kb' }));
   app.use(cookieParser());
 
+  // Root status endpoint
+  app.get('/', (req, res) => {
+    res.status(200).json({
+      name: 'TradeFlow API Gateway',
+      version: '1.0.0',
+      status: 'healthy',
+      endpoints: {
+        health: '/api/health',
+        database: '/api/health/database',
+        api: '/api/v1',
+      },
+    });
+  });
+
   // Health check routes
   app.use('/api/health', healthRoutes);
 

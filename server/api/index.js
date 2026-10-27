@@ -31,6 +31,19 @@ async function init() {
 }
 
 export default async function handler(req, res) {
-  const expressApp = await init();
-  return expressApp(req, res);
+  try {
+    const expressApp = await init();
+    return expressApp(req, res);
+  } catch (err) {
+    console.error('Fatal initialization error:', err);
+    initPromise = null; // Reset promise so subsequent requests can re-attempt once environment is configured
+    return res.status(500).json({
+      status: 'error',
+      code: 'INITIALIZATION_FAILED',
+      message: err.message || 'Database connection or backend initialization failed',
+      tip: !process.env.MONGODB_URI
+        ? 'MONGODB_URI is not set in Vercel Project Settings -> Environment Variables'
+        : 'Verify that MongoDB Atlas Network Access permits connections from anywhere (IP: 0.0.0.0/0)',
+    });
+  }
 }

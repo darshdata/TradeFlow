@@ -32,6 +32,16 @@ async function init() {
 
 export default async function handler(req, res) {
   try {
+    if (req.headers['x-matched-path']) {
+      const originalPath = req.headers['x-matched-path'];
+      const queryIndex = req.url.indexOf('?');
+      if (queryIndex !== -1 && !originalPath.includes('?')) {
+        req.url = originalPath + req.url.slice(queryIndex);
+      } else {
+        req.url = originalPath;
+      }
+    }
+
     const expressApp = await init();
     return expressApp(req, res);
   } catch (err) {
